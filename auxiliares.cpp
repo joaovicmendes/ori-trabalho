@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 #include <cctype>
+
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
 #include "./headers/interpretador.h"
+#include "./headers/metadados.h"
 
 bool tem_espaco(const std::string& texto) 
 {
@@ -66,5 +68,17 @@ void *malloc_safe(unsigned nbytes)
     }
 
     return p;
+}
+
+FILE *fopen_safe(const char *path, const char *modo)
+{
+    FILE *arquivo = fopen(path, modo);
+    if (arquivo == NULL)
+    {
+        std::cout << "Arquivo '" << SGBD_PATH << "' não encontrado\n";
+        EB();
+    }
+
+    return arquivo;
 }
 

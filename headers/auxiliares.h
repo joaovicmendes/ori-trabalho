@@ -35,4 +35,10 @@ int qtd_registros(const std::string& campos);
 // @ret   void *
 void *malloc_safe(unsigned nbytes);
 
+// Implementação da função fopen() com verificação de NULL ptr
+// @param const char* : caminho do arquivo
+// @param const char* : modo de abertura
+// @ret        FILE *
+FILE *fopen_safe(const char *path, const char *modo);
+
 #endif
