@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 #include <cstdio>
@@ -7,164 +8,120 @@
 #include "./headers/comandos.h"
 #include "./headers/metadados.h"
 
+Metadado::Metadado() {}
+
+
 Metadado::Metadado(const std::string& tabela)
 {
-    char *buffer = NULL;
-    int buff_sz;
-    int qtd_campos;
-    Campo c;
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existente na base de dados\n";
+        EB();
+    }
 
+    char *buffer;
+    int n;
+    int buff_sz;
     std::string path("./metadados/" + tabela + ".dat");
     FILE *arquivo = fopen_safe(path.c_str(), "rb");
     
-    // Lendo tabela
     fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
-    // Alocando buffer e lendo tabela
-    buffer = (char *) malloc_safe(buff_sz + 1);
-    fread(&buffer, sizeof(char), buff_sz, arquivo);
+    buffer = (char *) malloc_safe( (buff_sz + 1) * (sizeof(char)) );
+    fread(buffer, sizeof(char), buff_sz, arquivo);
     buffer[buff_sz] = '\0';
-
     this->tabela.assign(buffer);
-    free(buffer);
+    free(buffer), buffer = NULL;
 
-    // Lendo campos
-    fread(&qtd_campos, sizeof(this->n), 1, arquivo);
-    for (int i = 0; i < qtd_campos; i++)
+    fread(&n, sizeof(n), 1, arquivo);
+    for (int i = 0; i < n; i++)
     {
-        char modo = 'N';
+        Campo c;
 
-        // Tamanho do tipo
-        fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
         // Tipo
-        buffer = (char *) malloc_safe(buff_sz + 1);
-        fread(&buffer, sizeof(char), buff_sz, arquivo);
-        buffer[buff_sz] = '\0';
-        c.tipo.assign(buffer);
-        free(buffer);
-
-        // Tamanho do nome
         fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
-        // Nome
-        buffer = (char *) malloc_safe(buff_sz + 1);
-        fread(&buffer, sizeof(char), buff_sz, arquivo);
+        buffer = (char *) malloc_safe( (buff_sz + 1) * (sizeof(char)) );
         buffer[buff_sz] = '\0';
+        fread(buffer, sizeof(char), buff_sz, arquivo);
+        c.tipo.assign(buffer);
+        free(buffer), buffer = NULL;
+
+
+        // Nome
+        fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
+        buffer = (char *) malloc_safe( (buff_sz + 1) * (sizeof(char)) );
+        buffer[buff_sz] = '\0';
+        fread(buffer, sizeof(char), buff_sz, arquivo);
         c.nome.assign(buffer);
-        free(buffer);
+        free(buffer), buffer = NULL;
 
+
+        // Indice
+        fread(&c.indice, sizeof(char), 1, arquivo);
         this->add_campo(c);
-
-        // Tipo de indice
-        fwrite(&modo, sizeof(char), 1, arquivo);
-        this->set_indice(c.nome, modo);
-    }
-
-    // Lendo lista de removidos
-    fwrite(&buff_sz, sizeof(buff_sz), 1, arquivo);
-    this->num_removidos = buff_sz;
-    // Escrevendo n tipos, n campos e seus tamanhos antes
-    for (int i = 0; i < this->num_removidos; i++)
-    {
-        long int rm;
-        fread(&rm, sizeof(long int), 1, arquivo);
-        this->removidos.push_back(rm);
     }
 
     fclose(arquivo);
 }
 
-void Metadado::set_tabela(const std::string& tabela)
-{
-    this->tabela = tabela;
-}
+void Metadado::set_tabela(const std::string& tabela) { this->tabela = tabela; }
 
-int Metadado::num_campos()
-{
-    return this->n;
-}
+int Metadado::num_campos() { return this->campos.size(); }
 
-void Metadado::add_campo(Campo c)
-{
-    this->n++;
-    this->campos.push_back(c);
-    this->indice.push_back('N');
-}
+void Metadado::add_campo(Campo c) { this->campos.push_back(c); }
 
-void Metadado::set_indice(const std::string& nome_campo, const char tipo)
+void Metadado::set_indice(const std::string& nome_campo, const char indice)
 {
-    // Caso não tenha o mesmo número de elementos em ambas as listas
-    if (this->indice.size() != this->campos.size())
+    if (indice == 'A' || indice == 'N' || indice == 'H')
     {
-        std::cout << "Inconsistência no tamanho da lista de campos e na lista de indices\n";
-        EB();
-    }
-
-    if (tipo == 'A' || tipo == 'N' || tipo == 'H')
-    {
-        for (int i = 0; i < this->indice.size(); i++)
+        for (int i = 0; i < this->campos.size(); i++)
         {
             if (this->campos.at(i).nome == nome_campo) 
-                this->indice.at(i) = tipo;
+                this->campos.at(i).indice = indice;
         }
     } 
+    else
+    {
+        std::cout << "Índice inexistente sendo adicionado\n";
+        EB();
+    }
 }
 
 char Metadado::indice_em(std::string campo)
 {
-    // Caso não tenha o mesmo número de elementos em ambas as listas
-    if (this->indice.size() != this->campos.size())
-    {
-        std::cout << "Inconsistência no tamanho da lista de campos e na lista de indices\n";
-        EB();
-    }
-
-    for (int i = 0; i < this->indice.size(); i++)
+    for (int i = 0; i < this->campos.size(); i++)
     {
         if (this->campos.at(i).nome == campo) 
-            return this->indice.at(i);
+            return this->campos.at(i).indice;
     }
-    
+
     // Se campo não encontrado
     return false;
 }
 
 bool Metadado::hash_em(std::string campo)
 {
-    // Caso não tenha o mesmo número de elementos em ambas as listas
-    if (this->indice.size() != this->campos.size())
-    {
-        std::cout << "Inconsistência no tamanho da lista de campos e na lista de indices\n";
-        EB();
-    }
-
-    for (int i = 0; i < this->indice.size(); i++)
+    for (int i = 0; i < this->campos.size(); i++)
     {
         if (this->campos.at(i).nome == campo) 
         {
-            if (this->indice.at(i) == 'H')
+            if (this->campos.at(i).indice == 'H')
                 return true;
             else
                 return false;
         }
     }
-    
+
     // Se campo não encontrado
     return false;
 }
 
 bool Metadado::arvore_em(std::string campo)
 {
-    // Caso não tenha o mesmo número de elementos em ambas as listas
-    if (this->indice.size() != this->campos.size())
-    {
-        std::cout << "Inconsistência no tamanho da lista de campos e na lista de indices\n";
-        EB();
-    }
-
-    for (int i = 0; i < this->indice.size(); i++)
+    for (int i = 0; i < this->campos.size(); i++)
     {
         if (this->campos.at(i).nome == campo) 
         {
-            if (this->indice.at(i) == 'A')
+            if (this->campos.at(i).indice == 'A')
                 return true;
             else
                 return false;
@@ -177,71 +134,74 @@ bool Metadado::arvore_em(std::string campo)
 
 void Metadado::save()
 {
+    char indice;
     int buff_sz;
     std::string path("./metadados/" + this->tabela + ".dat");
     FILE *arquivo = fopen_safe(path.c_str(), "wb");
     
     // Escrevendo tamanho de this->tabela
     buff_sz = this->tabela.length();
-    fwrite(&buff_sz, sizeof(buff_sz), 1, arquivo);
-    // Escrevendo this->tabela
-    fwrite(&(this->tabela), sizeof(char), buff_sz, arquivo);
+    fwrite(&buff_sz, sizeof(int), 1, arquivo);
+    fwrite(this->tabela.c_str(), sizeof(char), buff_sz, arquivo);
 
     // Escrevendo número de campos
-    fwrite(&(this->n), sizeof(this->n), 1, arquivo);
-    // Escrevendo n tipos, n campos e seus tamanhos antes
-    for (int i = 0; i < this->n; i++)
+    int n = this->campos.size();
+    fwrite(&n, sizeof(int), 1, arquivo);
+    for (int i = 0; i < n; i++)
     {
-        // Tamanho do tipo
-        buff_sz = this->campos.at(i).tipo.length();
-        fwrite(&buff_sz, sizeof(buff_sz), 1, arquivo);
         // Tipo
-        fwrite(&(this->campos.at(i).tipo), sizeof(char), buff_sz, arquivo);
+        buff_sz = this->campos.at(i).tipo.length();
+        fwrite(&buff_sz, sizeof(int), 1, arquivo);
+        fwrite(this->campos.at(i).tipo.c_str(), sizeof(char), buff_sz, arquivo);
 
-        // Tamanho do nome
-        buff_sz = this->campos.at(i).nome.length();
-        fwrite(&buff_sz, sizeof(buff_sz), 1, arquivo);
         // Nome
-        fwrite(&(this->campos.at(i).nome), sizeof(char), buff_sz, arquivo);
+        buff_sz = this->campos.at(i).nome.length();
+        fwrite(&buff_sz, sizeof(int), 1, arquivo);
+        fwrite(this->campos.at(i).nome.c_str(), sizeof(char), buff_sz, arquivo);
 
-        // Tipo de indice
-        fwrite(&(this->indice.at(i)), sizeof(char), 1, arquivo);
-    }
-
-    // Escrevendo número de itens da lista de removidos
-    fwrite(&(this->num_removidos), sizeof(this->num_removidos), 1, arquivo);
-    // Escrevendo n tipos, n campos e seus tamanhos antes
-    for (int i = 0; i < this->num_removidos; i++)
-    {
-        // Lista de removidos
-        fwrite(&(this->removidos.at(i)), sizeof(long int), 1, arquivo);
+        // Indice
+        indice = this->campos.at(i).indice;
+        fwrite(&indice, sizeof(indice), 1, arquivo);
     }
 
     fclose(arquivo);
+}
+
+void Metadado::print()
+{
+    int largest = 0;
+    for (int i = 0; i < this->campos.size(); i++)
+        if (this->campos.at(i).nome.size() > largest)
+            largest = this->campos.at(i).nome.size();
+
+    std::cout << " " << this->tabela << "\n";
+    for (int i = 0; i < this->campos.size(); i++)
+    {
+        std::cout << "  '" + this->campos.at(i).tipo + "':";
+        std::cout << std::left << std::setw(largest + 2) << "'" + this->campos.at(i).nome + "'";
+        std::cout << " (" << this->campos.at(i).indice << ")\n";
+    }
 }
 
 
 bool tem_tabela(const std::string& tabela)
 {
     char *buffer = NULL;
-    int buff_sz;
+    int buff_sz = 0;
     std::string tmp;
 
     FILE *arquivo = fopen_safe(SGBD_PATH, "ab+");
+    rewind(arquivo);
 
-    while (!feof(arquivo))
+    while (fread(&buff_sz, sizeof(buff_sz), 1, arquivo))
     {
-        // Lendo tamanho da sequência a seguir
-        fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
-
         // Alocando buffer e lendo sequência
-        buffer = (char *) malloc_safe(buff_sz + 1);
-        fread(&buffer, sizeof(char), buff_sz, arquivo);
+        buffer = (char *) malloc_safe(sizeof(char) * (buff_sz + 2));
+        fread(buffer, sizeof(char), buff_sz, arquivo);
         buffer[buff_sz] = '\0';
 
         tmp.assign(buffer);
         free(buffer);
-
         if (tmp == tabela)
         {
             fclose(arquivo);
@@ -258,10 +218,8 @@ void insere_tabela(const char* path, const std::string& tabela)
     int buff_sz = tabela.length();
     FILE *arquivo = fopen_safe(path, "ab+");
 
-    // Escrevendo tamanho da sequência
     fwrite(&buff_sz, sizeof(buff_sz), 1, arquivo);
-    // Escrevendo nome da tabela (não inclui \0)
-    fwrite(&tabela, sizeof(char), buff_sz, arquivo);
+    fwrite(tabela.c_str(), sizeof(char), buff_sz, arquivo);
 
     fclose(arquivo);
 }
@@ -275,12 +233,8 @@ void remove_tabela(const std::string& tabela)
 
     if (tem_tabela(tabela))
     {
-        while (!feof(arquivo))
+        while (fread(&buff_sz, sizeof(buff_sz), 1, arquivo))
         {
-           // Lendo tamanho da sequência a seguir
-            fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
-
-            // Alocando buffer e lendo sequência
             buffer = (char *) malloc_safe(buff_sz + 1);
             fread(&buffer, sizeof(char), buff_sz, arquivo);
             buffer[buff_sz] = '\0';

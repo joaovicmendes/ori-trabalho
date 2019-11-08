@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <cctype>
 
 #include "./headers/auxiliares.h"
@@ -82,3 +83,14 @@ FILE *fopen_safe(const char *path, const char *modo)
     return arquivo;
 }
 
+std::vector<std::string> str_tokenize(const std::string& texto, const char delim)
+{
+    std::vector<std::string> tokens;
+    std::string tmp;
+    std::stringstream ss(texto);
+
+    while (getline(ss, tmp, delim))
+        tokens.push_back(tmp);
+
+    return tokens;
+}

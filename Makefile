@@ -8,11 +8,9 @@ OBJECTS = main.o interpretador.o comandos.o auxiliares.o metadados.o
 
 main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
+	rm *.o ./metadados/* ./tabelas/*
 
 $(OBJECTS): ./headers/interpretador.h ./headers/comandos.h ./headers/auxiliares.h ./headers/metadados.h
 
 make clean:
-	rm *.o
-	rm ./metadados/*.dat
-	rm ./metadados/SGDB/*.dat
-	rm ./tabelas/*.dat
+	rm *.o ./metadados/* ./tabelas/*

@@ -41,4 +41,10 @@ void *malloc_safe(unsigned nbytes);
 // @ret        FILE *
 FILE *fopen_safe(const char *path, const char *modo);
 
+// Retorna um vector<string> com os tokens do texto, usando delim como base
+// @param std::string : texto a ser tokenizado
+// @param const char* : delimitadores
+// @ret   std::vector<std::string>
+std::vector<std::string> str_tokenize(const std::string& texto, const char delim);
+
 #endif

@@ -9,6 +9,7 @@ typedef struct campo
 {
     std::string tipo;
     std::string nome;
+    char indice;     // (N: nenhum; A:árvore; H:hash)
 } Campo;
 
 typedef struct registro
@@ -36,7 +37,7 @@ class Metadado
     void add_campo(Campo c);
 
     // Altera o índice de dado campo
-    void set_indice(const std::string& nome_campo, const char modo);
+    void set_indice(const std::string& nome_campo, const char indice);
 
     // Retorna qual o índice em campo (N: nenhum; A:árvore; H:hash)
     char indice_em(std::string campo);
@@ -50,13 +51,12 @@ class Metadado
     // Salva no arquivo
     void save();
 
+    // Imprime metadados
+    void print();
+
     private:
-    std::string              tabela; // De qual tabela o metadado é referente
-    int                           n; // Número de campos da tabela
-    std::vector<Campo>       campos; // Campos da tabela
-    std::vector<char>        indice; // Se o n-ésimo elemento tem indice (N: nenhum; A:árvore; H:hash)
-    int               num_removidos; // Número de itens na lista de removidos
-    std::vector<long int> removidos; // Lista de posições removidas
+    std::string        tabela; // De qual tabela o metadado é referente
+    std::vector<Campo> campos; // Campos da tabela
 };
 
 // Recebe de uma tabela, e verifica se ela esta presente na base.
