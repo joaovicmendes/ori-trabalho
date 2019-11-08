@@ -43,6 +43,7 @@ void CT(const std::string& tabela, const std::string& campos)
 {
     Campo      c;
     Metadado mtd;
+    FILE *arquivo;
 
     if (tem_tabela(tabela))
     {
@@ -55,7 +56,7 @@ void CT(const std::string& tabela, const std::string& campos)
     // Inserindo tabela nos metadados do sistema
     insere_tabela(SGBD_PATH, tabela);
 
-    // Recortando campos e adicionando aos metadados
+    // Recortando campos e adicionando salvando os metadados
     std::vector<std::string> vec = str_tokenize(campos, ';');
     for (int i = 0; i < vec.size(); i++)
     {
@@ -66,6 +67,13 @@ void CT(const std::string& tabela, const std::string& campos)
         mtd.add_campo(c);
     }
     mtd.save();
+
+    // Criando arquivo da tabela (vazio)
+    std::string path("./tabelas/" + tabela + ".dat");
+    arquivo = fopen_safe(path.c_str(), "wb");
+    fclose(arquivo);
+
+    std::cout << "Tabela '" + tabela + "' adicionada com sucesso\n";
 }
 
 void BR(const std::string& modo, const std::string& tabela, const std::string& busca) 
