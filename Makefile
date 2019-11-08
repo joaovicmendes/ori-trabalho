@@ -4,12 +4,12 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -pedantic
 
-OBJECTS = main.o interpretador.o comandos.o auxiliares.o
+OBJECTS = main.o interpretador.o comandos.o auxiliares.o metadados.o
 
 main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(OBJECTS): ./headers/interpretador.h ./headers/comandos.h ./headers/auxiliares.h
+$(OBJECTS): ./headers/interpretador.h ./headers/comandos.h ./headers/auxiliares.h ./headers/metadados.h
 
 make clean:
 	rm *.o

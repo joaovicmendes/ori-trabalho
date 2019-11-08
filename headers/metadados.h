@@ -27,28 +27,28 @@ class Metadado
     Metadado(const std::string& tabela);
 
     // Define à qual tabela pertence
-    void set_tabela();
+    void set_tabela(const std::string& tabela);
 
     // Número de campos da tabela em questão
     int num_campos();
 
-    // Definindo número de campos da tabela em questão
-    void set_num_campos(int n);
-
     // Adiciona um campo e um índice N à tabela
-    void add_campo(const Campo& c);
+    void add_campo(Campo c);
 
     // Altera o índice de dado campo
-    void set_indice(const std::string& nome_campo);
+    void set_indice(const std::string& nome_campo, const char modo);
 
     // Retorna qual o índice em campo (N: nenhum; A:árvore; H:hash)
-    char indice_de(std::string campo);
+    char indice_em(std::string campo);
 
     // Se existe índice hash em campo
     bool hash_em(std::string campo);
 
     // Se existe índice árvore em campo
     bool arvore_em(std::string campo);
+
+    // Salva no arquivo
+    void save();
 
     private:
     std::string              tabela; // De qual tabela o metadado é referente
