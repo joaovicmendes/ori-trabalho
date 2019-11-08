@@ -56,7 +56,7 @@ void CT(const std::string& tabela, const std::string& campos)
     // Inserindo tabela nos metadados do sistema
     insere_tabela(SGBD_PATH, tabela);
 
-    // Recortando campos e adicionando salvando os metadados
+    // Recortando campos e salvando os metadados
     std::vector<std::string> vec = str_tokenize(campos, ';');
     for (int i = 0; i < vec.size(); i++)
     {
@@ -103,7 +103,25 @@ void GI(const std::string& tabela, const std::string& chave)
 
 void RT(const std::string& tabela) 
 {
-    std::cout << "Comando 'RT' '" + tabela + "' (não implementado)\n";    
+    std::string path;
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela não existente na base de dados\n";
+        EB();
+    }
+
+    // Removendo dos metadados do sistema
+    remove_tabela(tabela);
+
+    // Rmovendo o arquivo dos metadados da tabela
+    path.assign("./metadados/" + tabela + ".dat");
+    remove(path.c_str());
+    
+    // Rmovendo o arquivo da tabela
+    path.assign("./tabelas/" + tabela + ".dat");
+    remove(path.c_str());
+
+    std::cout << "Tabela '" << tabela << "' removida com sucesso\n";
 }
 
 void AT(const std::string& tabela) 

@@ -229,25 +229,22 @@ void remove_tabela(const std::string& tabela)
     char *buffer = NULL;
     int buff_sz;
     std::string tmp;
-    FILE *arquivo = fopen_safe(SGBD_PATH, "ab+");
+    FILE *arquivo = fopen_safe(SGBD_PATH, "rb+");
 
-    if (tem_tabela(tabela))
+    while (fread(&buff_sz, sizeof(buff_sz), 1, arquivo))
     {
-        while (fread(&buff_sz, sizeof(buff_sz), 1, arquivo))
-        {
-            buffer = (char *) malloc_safe(buff_sz + 1);
-            fread(&buffer, sizeof(char), buff_sz, arquivo);
-            buffer[buff_sz] = '\0';
+        buffer = (char *) malloc_safe(buff_sz + 1);
+        buffer[buff_sz] = '\0';
+        fread(buffer, sizeof(char), buff_sz, arquivo);
 
-            tmp.assign(buffer);
-            free(buffer);
+        tmp.assign(buffer);
+        free(buffer);
 
-            if (tmp != tabela)
-                insere_tabela("./metadados/tmp", "ab+");
-        }
-        remove(SGBD_PATH);
-        rename("./metadados/tmp", SGBD_PATH);
+        if (tmp != tabela)
+            insere_tabela("./metadados/tmp", tabela);
     }
-
     fclose(arquivo);
+
+    remove(SGBD_PATH);
+    rename("./metadados/tmp", SGBD_PATH);
 }
