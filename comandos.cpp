@@ -2,7 +2,9 @@
 #include <string>
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
+#include "./headers/interpretador.h"
 #include "./headers/metadados.h"
+#include "./headers/registros.h"
 
 void EB() 
 {
@@ -88,7 +90,16 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
 
 void IR(const std::string& tabela, const std::string& registro) 
 {
-    std::cout << "Comando 'IR' '" + tabela + "' '" + registro + "' (não implementado)\n";    
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    Metadado mtd(tabela);
+    Registro reg(mtd, registro);
+    std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
+    reg.print();
 }
 
 void RI(const std::string& tabela, const std::string& chave) 
@@ -116,7 +127,7 @@ void RT(const std::string& tabela)
     // Rmovendo o arquivo dos metadados da tabela
     path.assign("./metadados/" + tabela + ".dat");
     remove(path.c_str());
-    
+
     // Rmovendo o arquivo da tabela
     path.assign("./tabelas/" + tabela + ".dat");
     remove(path.c_str());

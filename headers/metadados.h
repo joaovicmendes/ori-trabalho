@@ -12,12 +12,6 @@ typedef struct campo
     char indice;     // (N: nenhum; A:árvore; H:hash)
 } Campo;
 
-typedef struct registro
-{
-    std::vector<std::string> tipo;
-    std::vector<std::string> nome;
-} Registro;
-
 class Metadado
 {
     public:
@@ -30,29 +24,35 @@ class Metadado
     // Define à qual tabela pertence
     void set_tabela(const std::string& tabela);
 
+    // Retorna string com o nome da tabela referente à esses metadados
+    std::string get_tabela() const;
+
     // Número de campos da tabela em questão
-    int num_campos();
+    int num_campos() const;
 
     // Adiciona um campo e um índice N à tabela
     void add_campo(Campo c);
+
+    // Retorna um vector dos campos dessa tabela
+    std::vector<Campo> get_campos() const;
 
     // Altera o índice de dado campo
     void set_indice(const std::string& nome_campo, const char indice);
 
     // Retorna qual o índice em campo (N: nenhum; A:árvore; H:hash)
-    char indice_em(std::string campo);
+    char indice_em(std::string campo) const;
 
     // Se existe índice hash em campo
-    bool hash_em(std::string campo);
+    bool hash_em(std::string campo) const;
 
     // Se existe índice árvore em campo
-    bool arvore_em(std::string campo);
+    bool arvore_em(std::string campo) const;
 
     // Salva no arquivo
     void save();
 
     // Imprime metadados
-    void print();
+    void print() const;
 
     private:
     std::string        tabela; // De qual tabela o metadado é referente

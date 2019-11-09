@@ -65,9 +65,13 @@ Metadado::Metadado(const std::string& tabela)
 
 void Metadado::set_tabela(const std::string& tabela) { this->tabela = tabela; }
 
-int Metadado::num_campos() { return this->campos.size(); }
+std::string Metadado::get_tabela() const { return this->tabela; }
+
+int Metadado::num_campos() const { return this->campos.size(); }
 
 void Metadado::add_campo(Campo c) { this->campos.push_back(c); }
+
+std::vector<Campo> Metadado::get_campos() const { return this->campos; }
 
 void Metadado::set_indice(const std::string& nome_campo, const char indice)
 {
@@ -86,7 +90,7 @@ void Metadado::set_indice(const std::string& nome_campo, const char indice)
     }
 }
 
-char Metadado::indice_em(std::string campo)
+char Metadado::indice_em(std::string campo) const
 {
     for (int i = 0; i < this->campos.size(); i++)
     {
@@ -98,7 +102,7 @@ char Metadado::indice_em(std::string campo)
     return false;
 }
 
-bool Metadado::hash_em(std::string campo)
+bool Metadado::hash_em(std::string campo) const
 {
     for (int i = 0; i < this->campos.size(); i++)
     {
@@ -115,7 +119,7 @@ bool Metadado::hash_em(std::string campo)
     return false;
 }
 
-bool Metadado::arvore_em(std::string campo)
+bool Metadado::arvore_em(std::string campo) const
 {
     for (int i = 0; i < this->campos.size(); i++)
     {
@@ -167,7 +171,7 @@ void Metadado::save()
     fclose(arquivo);
 }
 
-void Metadado::print()
+void Metadado::print() const
 {
     int largest = 0;
     for (int i = 0; i < this->campos.size(); i++)
