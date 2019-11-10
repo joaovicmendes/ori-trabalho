@@ -60,18 +60,72 @@ Metadado::Metadado(const std::string& tabela)
         this->add_campo(c);
     }
 
+    fread(&n, sizeof(n), 1, arquivo);
+    for (int i = 0; i < n; i++)
+    {
+        Removido r;
+        fread(&r, sizeof(long int), 2, arquivo);
+
+        this->add_removido(r);
+    }
+
     fclose(arquivo);
 }
 
-void Metadado::set_tabela(const std::string& tabela) { this->tabela = tabela; }
+int Metadado::num_campos() const
+{ 
+    return this->campos.size();
+}
 
-std::string Metadado::get_tabela() const { return this->tabela; }
+std::string Metadado::get_tabela() const
+{
+    return this->tabela;
+}
 
-int Metadado::num_campos() const { return this->campos.size(); }
+std::vector<Campo> Metadado::get_campos() const
+{
+    return this->campos;
+}
 
-void Metadado::add_campo(Campo c) { this->campos.push_back(c); }
+std::vector<Removido> Metadado::get_removidos() const
+{
+    return this->removidos;
+}
 
-std::vector<Campo> Metadado::get_campos() const { return this->campos; }
+void Metadado::set_tabela(const std::string& tabela)
+{
+    this->tabela = tabela;
+}
+
+void Metadado::add_campo(Campo c)
+{
+    this->campos.push_back(c);
+}
+
+void Metadado::add_removido(Removido r)
+{
+    this->removidos.push_back(r);
+    std::sort(this->removidos.begin(), this->removidos.end(), std::greater<Removido>());
+}
+
+void Metadado::del_removido(long int indice)
+{
+    bool removeu = false;
+    for (int i = 0; i < this->removidos.size() && !removeu; i++)
+    {
+        if (this->removidos.at(i).indice == indice) 
+        {
+            this->removidos.erase(this->removidos.begin() + i);
+            removeu = true;
+        }
+    }
+    std::sort(this->removidos.begin(), this->removidos.end(), std::greater<Removido>());
+}
+
+Removido Metadado::maior_removido() const
+{
+    return this->removidos.front();
+}
 
 void Metadado::set_indice(const std::string& nome_campo, const char indice)
 {
@@ -168,6 +222,14 @@ void Metadado::save()
         fwrite(&indice, sizeof(indice), 1, arquivo);
     }
 
+    n = this->removidos.size();
+    fwrite(&n, sizeof(int), 1, arquivo);
+    for (int i = 0; i < n; i++)
+    {
+        Removido r = this->removidos.at(i);
+        fwrite(&r, sizeof(long int), 2, arquivo);
+    }
+
     fclose(arquivo);
 }
 
@@ -184,6 +246,12 @@ void Metadado::print() const
         std::cout << "  '" + this->campos.at(i).tipo + "':";
         std::cout << std::left << std::setw(largest + 2) << "'" + this->campos.at(i).nome + "'";
         std::cout << " (" << this->campos.at(i).indice << ")\n";
+    }
+
+    std::cout << "  Removidos:\n";
+    for (int i = 0; i < this->removidos.size(); i++)
+    {
+        std::cout << "     " << this->removidos.at(i).indice << " (" << this->removidos.at(i).tamanho << ")\n";
     }
 }
 
@@ -251,4 +319,14 @@ void remove_tabela(const std::string& tabela)
 
     remove(SGBD_PATH);
     rename("./metadados/tmp", SGBD_PATH);
+}
+
+bool operator>(const Removido& a, const Removido& b)
+{
+    return (a.tamanho > b.tamanho);
+}
+
+bool operator<(const Removido& a, const Removido& b)
+{
+    return (a.tamanho < b.tamanho);
 }

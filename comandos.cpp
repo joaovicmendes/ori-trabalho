@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <ctime>
 
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
