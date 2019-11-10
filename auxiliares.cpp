@@ -76,7 +76,7 @@ FILE *fopen_safe(const char *path, const char *modo)
     FILE *arquivo = fopen(path, modo);
     if (arquivo == NULL)
     {
-        std::cout << "Arquivo '" << SGBD_PATH << "' não encontrado\n";
+        std::cout << "Arquivo '" << path << "' não encontrado\n";
         EB();
     }
 

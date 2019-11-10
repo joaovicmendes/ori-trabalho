@@ -99,7 +99,7 @@ char Metadado::indice_em(std::string campo) const
     }
 
     // Se campo não encontrado
-    return false;
+    return '\0';
 }
 
 bool Metadado::hash_em(std::string campo) const

@@ -16,13 +16,13 @@ typedef struct reg
 class Registro
 {
     public:
-    // Construtor para recuperar o registro existente na pos da tabela
-    Registro(const Metadado& mtd, long int pos);
-
-    // Construtor para criar um novo registro, recebe uma lisat de valores 
+    // Construtor para criar um novo registro, recebe uma lista de valores 
     // separada por ;
     Registro(const Metadado& mtd, const std::string& registro);
-    
+
+    // Retorna this->campos
+    std::vector<Reg> lista_campos();
+
     // Adiciona ao fim do arquivo de registros da this->tabela
     void append();
 
@@ -30,8 +30,6 @@ class Registro
     void print();
 
     private:
-    char             valido; // Se o registro é válido
-    int                 tam; // Tamanho do registro em bytes
     std::string      tabela; // De qual tabela o metadado é referente
     std::vector<Reg> campos; // Campos da tabela
 };

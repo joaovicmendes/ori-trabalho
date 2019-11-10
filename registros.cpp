@@ -10,13 +10,8 @@
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
 
-Registro::Registro(const Metadado& mtd, long int pos)
-{
-}
-
 Registro::Registro(const Metadado& mtd, const std::string& registro)
 {
-    this->valido = 1;
     this->tabela = mtd.get_tabela();
     std::vector<Campo> campos = mtd.get_campos();
 
@@ -34,8 +29,6 @@ Registro::Registro(const Metadado& mtd, const std::string& registro)
 
         this->campos.push_back(r);
     }
-
-    this->tam = 0;
 }
 
 void Registro::append()
@@ -51,12 +44,20 @@ void Registro::append()
 
     for (int i = 0; i < this->campos.size(); i++)
     {
-        arquivo << this->campos.at(i).valor << ";";
+        arquivo << this->campos.at(i).valor;
+        if (i + 1 != this->campos.size())
+            arquivo << ";";
     }
     arquivo << "\n";
 
     arquivo.close();
 }
+
+std::vector<Reg> Registro::lista_campos()
+{
+    return this->campos;
+}
+
 
 void Registro::print()
 {

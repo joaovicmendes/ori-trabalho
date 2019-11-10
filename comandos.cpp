@@ -1,10 +1,17 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
 #include <string>
+#include <map>
+
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
 #include "./headers/interpretador.h"
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
+#include "./headers/resultados.h"
+
+std::map<std::string, std::vector<long int> > lista_resultados;
 
 void EB() 
 {
@@ -80,7 +87,58 @@ void CT(const std::string& tabela, const std::string& campos)
 
 void BR(const std::string& modo, const std::string& tabela, const std::string& busca) 
 {
-    std::cout << "Comando 'BR' '" + modo + "' '" + tabela + "' '" + busca + "' (não implementado)\n";       
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    Metadado mtd(tabela);
+    std::vector<long int> resultados;
+
+    // Recortando busca em campo:chave
+    std::vector<std::string> vec = str_tokenize(busca, ':');
+    if (vec.size() != 2)
+        erro_sintaxe(2);
+
+    // Procurando se existe o campo e qual seu indice
+    char indice_campo = mtd.indice_em( vec.front() );
+    if  (indice_campo == '\0')
+        erro_sintaxe(2);
+
+    // Imprimindo modo de operação apropriado
+    if (modo == "N")
+        std::cout << "Buscando registros '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
+    else
+        std::cout << "Buscando primeiro registro '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
+
+
+    if (indice_campo == 'H')
+    {
+        std::cout << "Busca em índice hash realizada (não implementada)\n";
+        resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
+    }
+    else if (indice_campo == 'A')
+    {
+        std::cout << "Busca em índice árvore realizada (não implementada)\n";
+        resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
+    }
+    else
+    {
+        std::cout << "Busca sequencial realizada\n";
+        resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
+    }
+
+    std::map<std::string, std::vector<long int> >::iterator it;
+    it = lista_resultados.find(tabela);
+    if (it != lista_resultados.end())
+    {
+        it->second = resultados;
+    }
+    else
+    {
+        lista_resultados[tabela] = resultados;
+    }
 }
 
 void CI(const std::string& modo, const std::string& tabela, const std::string& chave) 
@@ -151,7 +209,46 @@ void AT(const std::string& tabela)
 
 void AR(const std::string& tabela) 
 {
-    std::cout << "Comando 'AR' '" + tabela + "' (não implementado)\n";    
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    std::map<std::string, std::vector<long int> >::iterator it = lista_resultados.find(tabela);
+    if (it == lista_resultados.end())
+    {
+        std::cout << "Não foram realizadas buscas na tabela '" << tabela << "'\n";
+        return;
+    }
+    
+    std::ifstream arquivo("./tabelas/" + tabela + ".dat");
+    if (!arquivo.is_open())
+    {
+        std::cout << "Arquivo '" << "./tabelas/" + tabela + ".dat" << "' não encontrado\n";
+        EB();
+    }
+
+    Metadado mtd(tabela);
+    std::string linha;
+
+    std::cout << "Apresentando resultados da última busca em '" << tabela << "'\n";
+    if (it->second.size() == 0)
+    {
+        std::cout << "Nenhum registro encontrado\n";
+        return;
+    } 
+
+    for (int i = 0; i < it->second.size(); i++)
+    {
+        arquivo.seekg(it->second.at(i));
+        getline(arquivo, linha);
+
+        Registro resultado(mtd, linha);
+        resultado.print();
+
+        std::cout << "  ---\n";
+    }
 }
 
 void RR(const std::string& tabela) 
