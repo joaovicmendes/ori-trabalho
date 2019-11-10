@@ -100,6 +100,7 @@ void IR(const std::string& tabela, const std::string& registro)
     Registro reg(mtd, registro);
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
     reg.print();
+    reg.append();
 }
 
 void RI(const std::string& tabela, const std::string& chave) 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -37,8 +38,24 @@ Registro::Registro(const Metadado& mtd, const std::string& registro)
     this->tam = 0;
 }
 
-void Registro::save(long int pos)
+void Registro::append()
 {
+    std::string path("./tabelas/" + this->tabela + ".dat");
+    std::ofstream arquivo(path, std::ios::out | std::ios::ate | std::ios::app);
+
+    if (!arquivo.is_open())
+    {
+        std::cout << "Arquivo '" << path << "' não encontrado\n";
+        EB();
+    }
+
+    for (int i = 0; i < this->campos.size(); i++)
+    {
+        arquivo << this->campos.at(i).valor << ";";
+    }
+    arquivo << "\n";
+
+    arquivo.close();
 }
 
 void Registro::print()

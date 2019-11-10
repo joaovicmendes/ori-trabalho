@@ -22,9 +22,9 @@ class Registro
     // Construtor para criar um novo registro, recebe uma lisat de valores 
     // separada por ;
     Registro(const Metadado& mtd, const std::string& registro);
-
-    // Salva no arquivo na pos
-    void save(long int pos);
+    
+    // Adiciona ao fim do arquivo de registros da this->tabela
+    void append();
 
     // Imprime conteúdos do registro
     void print();
