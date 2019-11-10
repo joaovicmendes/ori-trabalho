@@ -209,20 +209,24 @@ void AT(const std::string& tabela)
 
 void AR(const std::string& tabela) 
 {
+    std::string linha;
+    std::ifstream arquivo;
+    std::map<std::string, std::vector<long int> >::iterator it;
+
     if (!tem_tabela(tabela))
     {
         std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
         EB();
     }
 
-    std::map<std::string, std::vector<long int> >::iterator it = lista_resultados.find(tabela);
+    it = lista_resultados.find(tabela);
     if (it == lista_resultados.end())
     {
         std::cout << "Não foram realizadas buscas na tabela '" << tabela << "'\n";
         return;
     }
     
-    std::ifstream arquivo("./tabelas/" + tabela + ".dat");
+    arquivo.open("./tabelas/" + tabela + ".dat");
     if (!arquivo.is_open())
     {
         std::cout << "Arquivo '" << "./tabelas/" + tabela + ".dat" << "' não encontrado\n";
@@ -230,24 +234,25 @@ void AR(const std::string& tabela)
     }
 
     Metadado mtd(tabela);
-    std::string linha;
 
     std::cout << "Apresentando resultados da última busca em '" << tabela << "'\n";
+
     if (it->second.size() == 0)
     {
         std::cout << "Nenhum registro encontrado\n";
-        return;
-    } 
-
-    for (int i = 0; i < it->second.size(); i++)
+    }
+    else
     {
-        arquivo.seekg(it->second.at(i));
-        getline(arquivo, linha);
+        for (int i = 0; i < it->second.size(); i++)
+        {
+            arquivo.seekg(it->second.at(i));
+            
+            getline(arquivo, linha);
+            Registro res(mtd, linha);
 
-        Registro resultado(mtd, linha);
-        resultado.print();
-
-        std::cout << "  ---\n";
+            res.print();
+            std::cout << "  ---\n";
+        }
     }
 }
 
