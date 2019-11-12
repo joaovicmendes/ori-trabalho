@@ -8,8 +8,15 @@
 #include "./headers/comandos.h"
 #include "./headers/metadados.h"
 
-Metadado::Metadado() {}
-
+Metadado::Metadado() 
+{ 
+    Removido r;
+    r.tamanho = 0;
+    r.indice = -1;
+    
+    this->ini_removidos = r;
+    this->pos_removidos = -1;
+}
 
 Metadado::Metadado(const std::string& tabela)
 {
@@ -25,6 +32,8 @@ Metadado::Metadado(const std::string& tabela)
     std::string path("./metadados/" + tabela + ".dat");
     FILE *arquivo = fopen_safe(path.c_str(), "rb");
     
+    fread(&this->pos_removidos, sizeof(long int), 1, arquivo);
+
     fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
     buffer = (char *) malloc_safe( (buff_sz + 1) * (sizeof(char)) );
     fread(buffer, sizeof(char), buff_sz, arquivo);
@@ -60,14 +69,7 @@ Metadado::Metadado(const std::string& tabela)
         this->add_campo(c);
     }
 
-    fread(&n, sizeof(n), 1, arquivo);
-    for (int i = 0; i < n; i++)
-    {
-        Removido r;
-        fread(&r, sizeof(long int), 2, arquivo);
-
-        this->add_removido(r);
-    }
+    fread(&this->ini_removidos, sizeof(long int), 2, arquivo);
 
     fclose(arquivo);
 }
@@ -87,9 +89,9 @@ std::vector<Campo> Metadado::get_campos() const
     return this->campos;
 }
 
-std::vector<Removido> Metadado::get_removidos() const
+Removido Metadado::get_removido() const
 {
-    return this->removidos;
+    return this->ini_removidos;
 }
 
 void Metadado::set_tabela(const std::string& tabela)
@@ -102,29 +104,23 @@ void Metadado::add_campo(Campo c)
     this->campos.push_back(c);
 }
 
-void Metadado::add_removido(Removido r)
+void Metadado::set_removido(long int ini, long int tam)
 {
-    this->removidos.push_back(r);
-    std::sort(this->removidos.begin(), this->removidos.end(), std::greater<Removido>());
-}
+    Removido r;
+    r.tamanho = tam;
+    r.indice = ini;
+    this->ini_removidos = r;
 
-void Metadado::del_removido(long int indice)
-{
-    bool removeu = false;
-    for (int i = 0; i < this->removidos.size() && !removeu; i++)
+    if (this->pos_removidos != -1)
     {
-        if (this->removidos.at(i).indice == indice) 
-        {
-            this->removidos.erase(this->removidos.begin() + i);
-            removeu = true;
-        }
-    }
-    std::sort(this->removidos.begin(), this->removidos.end(), std::greater<Removido>());
-}
+        std::string path("./metadados/" + this->tabela + ".dat");
+        FILE *arquivo = fopen_safe(path.c_str(), "rb+");
+        
+        fseek(arquivo, this->pos_removidos, SEEK_SET);
+        fwrite(&this->ini_removidos, sizeof(long int), 2, arquivo);
 
-Removido Metadado::maior_removido() const
-{
-    return this->removidos.front();
+        fclose(arquivo);
+    }
 }
 
 void Metadado::set_indice(const std::string& nome_campo, const char indice)
@@ -197,6 +193,9 @@ void Metadado::save()
     std::string path("./metadados/" + this->tabela + ".dat");
     FILE *arquivo = fopen_safe(path.c_str(), "wb");
     
+    // Escrevendo início da lista de removidos (sempre -1, na primeira vez)
+    fwrite(&this->pos_removidos, sizeof(long int), 1, arquivo);
+
     // Escrevendo tamanho de this->tabela
     buff_sz = this->tabela.length();
     fwrite(&buff_sz, sizeof(int), 1, arquivo);
@@ -222,13 +221,15 @@ void Metadado::save()
         fwrite(&indice, sizeof(indice), 1, arquivo);
     }
 
-    n = this->removidos.size();
-    fwrite(&n, sizeof(int), 1, arquivo);
-    for (int i = 0; i < n; i++)
-    {
-        Removido r = this->removidos.at(i);
-        fwrite(&r, sizeof(long int), 2, arquivo);
-    }
+    // Escrevendo posição correta do início da lista de removidos
+    long int pos = ftell(arquivo);
+    this->pos_removidos = pos;
+    fseek(arquivo, 0, SEEK_SET);
+    fwrite(&this->pos_removidos, sizeof(long int), 1, arquivo);
+    fseek(arquivo, pos, SEEK_SET);
+
+    // Escrevendo início da lista de vazios
+    fwrite(&this->ini_removidos, sizeof(long int), 2, arquivo);
 
     fclose(arquivo);
 }
@@ -248,11 +249,7 @@ void Metadado::print() const
         std::cout << " (" << this->campos.at(i).indice << ")\n";
     }
 
-    std::cout << "  Removidos:\n";
-    for (int i = 0; i < this->removidos.size(); i++)
-    {
-        std::cout << "     " << this->removidos.at(i).indice << " (" << this->removidos.at(i).tamanho << ")\n";
-    }
+    std::cout << "  Início Removidos: (" << this->ini_removidos.indice << ", " << this->ini_removidos.tamanho << ")\n";
 }
 
 

@@ -37,7 +37,7 @@ class Metadado
     std::vector<Campo> get_campos() const;
 
     // Retorna um vector dos removidos dessa tabela
-    std::vector<Removido> get_removidos() const;
+    Removido get_removido() const;
 
     // Define à qual tabela pertence
     void set_tabela(const std::string& tabela);
@@ -45,14 +45,8 @@ class Metadado
     // Adiciona um campo e um índice N à tabela
     void add_campo(Campo c);
 
-    // Adiciona uma posição removida da tabela
-    void add_removido(Removido r);
-
-    // Retira uma posição removida da tabela
-    void del_removido(long int indice);
-
-    // Retorna o maior espaço removido da tabela
-    Removido maior_removido() const;
+    // Adiciona o novo início da lista de removidos
+    void set_removido(long int ini, long int tam);
 
     // Altera o índice de dado campo
     void set_indice(const std::string& nome_campo, const char indice);
@@ -73,9 +67,10 @@ class Metadado
     void print() const;
 
     private:
-    std::string              tabela; // De qual tabela o metadado é referente
-    std::vector<Campo>       campos; // Campos da tabela
-    std::vector<Removido> removidos; // Lista de espaços removidos na tabela
+    std::string        tabela; // De qual tabela o metadado é referente
+    std::vector<Campo> campos; // Campos da tabela
+    Removido    ini_removidos; // Lista de espaços removidos na tabela
+    long int    pos_removidos; // Posição da lista de removidos nos metadados
 };
 
 // Recebe de uma tabela, e verifica se ela esta presente na base.

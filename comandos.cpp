@@ -259,5 +259,59 @@ void AR(const std::string& tabela)
 
 void RR(const std::string& tabela) 
 {
-    std::cout << "Comando 'RR' '" + tabela + "' (não implementado)\n";    
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    char lixo;
+    long int indice;
+    std::string path("./tabelas/" + tabela + ".dat");
+    std::fstream arquivo;
+    Metadado mtd(tabela);
+
+    std::map<std::string, std::vector<long int> >::iterator it;
+    it = lista_resultados.find(tabela);
+
+    if (it == lista_resultados.end())
+        std::cout << "Sem buscas na tabela '" << tabela << "'\n";
+    else if (it->second.empty())
+        std::cout << "Sem resultados da última busca na tabela '" << tabela << "'\n";
+    else
+    {
+        arquivo.open(path);
+        if (!arquivo.is_open())
+        {
+            std::cout << "Arquivo '" << path << "' não encontrado\n";
+            EB();
+        }
+
+        for (int i = 0; i < it->second.size(); i++)
+        {
+            Removido aux = mtd.get_removido();
+
+            // Vai para a posição à ser removida
+            arquivo.seekg(it->second.at(i));
+            indice  = arquivo.tellg();
+            
+            // Calcula o tamanho do registro atual (deletado)
+            while (arquivo.peek() != '\n')
+                arquivo.get(lixo);
+
+            aux.tamanho = ((long int)arquivo.tellg()) - indice;
+            arquivo.seekg(indice);
+
+            // Escreve no registro a próxima prosição removida na forma prox:tamanho_atual#
+            arquivo << aux.indice << ":" << aux.tamanho << "#";
+
+            // Atualiza o começo da lista
+            mtd.set_removido(indice, 0);
+        }
+
+        arquivo.close();
+
+        std::cout << it->second.size() <<" registro(s) removido(s) de '" << tabela << "'\n";
+        lista_resultados.erase(it);
+    }
 }

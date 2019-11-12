@@ -29,21 +29,26 @@ std::vector<long int> busca_sequencial(const std::string& tabela, const std::str
 
     while (!atingiu_max && !arquivo.eof()) 
     {
-        Registro reg(mtd, linha);
-        campos = reg.lista_campos();
-
-        for (int i = 0; i < campos.size(); i++)
+        if (linha.find("#") != std::string::npos)
         {
-            if (campos.at(i).nome_campo == campo)
+            Registro reg(mtd, linha);
+            campos = reg.lista_campos();
+
+            for (int i = 0; i < campos.size(); i++)
             {
-                if (campos.at(i).valor == chave) 
+    
+                if (campos.at(i).nome_campo == campo)
                 {
-                    resultados.push_back(pos);
-                    if (modo == "U")
-                        atingiu_max = 1;
+                    if (campos.at(i).valor == chave) 
+                    {
+                        resultados.push_back(pos);
+                        if (modo == "U")
+                            atingiu_max = 1;
+                    }
                 }
             }
         }
+        
         pos = arquivo.tellg();
         getline(arquivo, linha);
     }
