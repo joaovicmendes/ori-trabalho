@@ -6,10 +6,10 @@
 #include "./headers/metadados.h"
 #include "./headers/reaproveitamento.h"
 
-long int busca_removido(Metadado& mtd, long int tam)
+long busca_removido(Metadado& mtd, long tam)
 {
     bool achou = false;
-    long int prev = -1, prox, sz, aux;
+    long prev = -1, prox, sz, aux;
     std::string input;
     std::fstream arquivo("./tabelas/" + mtd.get_tabela() + ".dat");
     
@@ -41,7 +41,7 @@ long int busca_removido(Metadado& mtd, long int tam)
                 int indice_frag = arquivo.tellg();
 
                 getline(arquivo, input);
-                int tam_frag = ((long int)arquivo.tellg()) - indice_frag - 1;
+                int tam_frag = ((long)arquivo.tellg()) - indice_frag - 1;
 
 
                 // Cria novo espaço alocado

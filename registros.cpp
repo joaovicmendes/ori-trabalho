@@ -77,9 +77,9 @@ void Registro::insert(long pos)
 }
 
 
-long int Registro::length()
+long Registro::length()
 {
-    long int sz = 0;
+    long sz = 0;
     for (int i = 0; i < this->campos.size(); i++)
         sz += this->campos.at(i).valor.length();
     

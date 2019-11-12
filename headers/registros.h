@@ -30,7 +30,7 @@ class Registro
     void insert(long pos);
 
     // Retorna o tamanho dos valores do registro (inclui os ;)
-    long int length();
+    long length();
 
     // Imprime conteúdos do registro
     void print();

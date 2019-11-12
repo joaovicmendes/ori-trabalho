@@ -14,7 +14,7 @@
 #include "./headers/resultados.h"
 #include "./headers/reaproveitamento.h"
 
-std::map<std::string, std::vector<long int> > lista_resultados;
+std::map<std::string, std::vector<long> > lista_resultados;
 
 void EB() 
 {
@@ -97,7 +97,7 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     }
 
     Metadado mtd(tabela);
-    std::vector<long int> resultados;
+    std::vector<long> resultados;
 
     // Recortando busca em campo:chave
     std::vector<std::string> vec = str_tokenize(busca, ':');
@@ -132,7 +132,7 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
         resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
     }
 
-    std::map<std::string, std::vector<long int> >::iterator it;
+    std::map<std::string, std::vector<long> >::iterator it;
     it = lista_resultados.find(tabela);
     if (it != lista_resultados.end())
     {
@@ -162,7 +162,7 @@ void IR(const std::string& tabela, const std::string& registro)
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
     reg.print();
 
-    long int pos = busca_removido(mtd, reg.length());
+    long pos = busca_removido(mtd, reg.length());
     if (pos != -1)
         reg.insert(pos);
     else
@@ -219,7 +219,7 @@ void AR(const std::string& tabela)
 {
     std::string linha;
     std::ifstream arquivo;
-    std::map<std::string, std::vector<long int> >::iterator it;
+    std::map<std::string, std::vector<long> >::iterator it;
 
     if (!tem_tabela(tabela))
     {
@@ -274,12 +274,12 @@ void RR(const std::string& tabela)
     }
 
     char lixo;
-    long int indice_novo, indice_ini, tam;
+    long indice_novo, indice_ini, tam;
     std::string path("./tabelas/" + tabela + ".dat");
     std::fstream arquivo;
     Metadado mtd(tabela);
 
-    std::map<std::string, std::vector<long int> >::iterator it;
+    std::map<std::string, std::vector<long> >::iterator it;
     it = lista_resultados.find(tabela);
 
     if (it == lista_resultados.end())
@@ -307,7 +307,7 @@ void RR(const std::string& tabela)
             while (arquivo.peek() != '\n')
                 arquivo.get(lixo);
 
-            tam = ((long int)arquivo.tellg()) - indice_novo;
+            tam = ((long)arquivo.tellg()) - indice_novo;
             arquivo.seekg(indice_novo);
 
             // Escreve no registro a próxima prosição removida na forma prox:tamanho_atual#

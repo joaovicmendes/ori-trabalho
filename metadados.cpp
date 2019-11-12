@@ -28,7 +28,7 @@ Metadado::Metadado(const std::string& tabela)
     std::string path("./metadados/" + tabela + ".dat");
     FILE *arquivo = fopen_safe(path.c_str(), "rb");
     
-    fread(&this->pos_removidos, sizeof(long int), 1, arquivo);
+    fread(&this->pos_removidos, sizeof(long), 1, arquivo);
 
     fread(&buff_sz, sizeof(buff_sz), 1, arquivo);
     buffer = (char *) malloc_safe( (buff_sz + 1) * (sizeof(char)) );
@@ -65,7 +65,7 @@ Metadado::Metadado(const std::string& tabela)
         this->add_campo(c);
     }
 
-    fread(&this->ini_removidos, sizeof(long int), 1, arquivo);
+    fread(&this->ini_removidos, sizeof(long), 1, arquivo);
 
     fclose(arquivo);
 }
@@ -85,7 +85,7 @@ std::vector<Campo> Metadado::get_campos() const
     return this->campos;
 }
 
-long int Metadado::get_removido() const
+long Metadado::get_removido() const
 {
     return this->ini_removidos;
 }
@@ -100,7 +100,7 @@ void Metadado::add_campo(Campo c)
     this->campos.push_back(c);
 }
 
-void Metadado::set_removido(long int indice)
+void Metadado::set_removido(long indice)
 {
     this->ini_removidos = indice;
 
@@ -110,7 +110,7 @@ void Metadado::set_removido(long int indice)
         FILE *arquivo = fopen_safe(path.c_str(), "rb+");
         
         fseek(arquivo, this->pos_removidos, SEEK_SET);
-        fwrite(&this->ini_removidos, sizeof(long int), 1, arquivo);
+        fwrite(&this->ini_removidos, sizeof(long), 1, arquivo);
 
         fclose(arquivo);
     }
@@ -187,7 +187,7 @@ void Metadado::save()
     FILE *arquivo = fopen_safe(path.c_str(), "wb");
     
     // Escrevendo início da lista de removidos (sempre -1, na primeira vez)
-    fwrite(&this->pos_removidos, sizeof(long int), 1, arquivo);
+    fwrite(&this->pos_removidos, sizeof(long), 1, arquivo);
 
     // Escrevendo tamanho de this->tabela
     buff_sz = this->tabela.length();
@@ -215,14 +215,14 @@ void Metadado::save()
     }
 
     // Escrevendo posição correta do início da lista de removidos
-    long int pos = ftell(arquivo);
+    long pos = ftell(arquivo);
     this->pos_removidos = pos;
     fseek(arquivo, 0, SEEK_SET);
-    fwrite(&this->pos_removidos, sizeof(long int), 1, arquivo);
+    fwrite(&this->pos_removidos, sizeof(long), 1, arquivo);
     fseek(arquivo, pos, SEEK_SET);
 
     // Escrevendo início da lista de vazios
-    fwrite(&this->ini_removidos, sizeof(long int), 1, arquivo);
+    fwrite(&this->ini_removidos, sizeof(long), 1, arquivo);
 
     fclose(arquivo);
 }
