@@ -72,7 +72,6 @@ void Registro::insert(long pos)
         if (i + 1 != this->campos.size())
             arquivo << ";";
     }
-    arquivo << "\n";
 
     arquivo.close();
 }
