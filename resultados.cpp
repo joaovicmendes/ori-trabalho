@@ -29,8 +29,10 @@ std::vector<long int> busca_sequencial(const std::string& tabela, const std::str
 
     while (!atingiu_max && !arquivo.eof()) 
     {
-        if (linha.find('#') == std::string::npos)
+        // Verificando se o campo foi deletado
+        if (linha.find(":") == std::string::npos)
         {
+            linha = linha.substr(0, linha.find("#"));
             Registro reg(mtd, linha);
             campos = reg.lista_campos();
 

@@ -256,6 +256,7 @@ void AR(const std::string& tabela)
             arquivo.seekg(it->second.at(i));
             
             getline(arquivo, linha);
+            linha = linha.substr(0, linha.find("#"));
             Registro res(mtd, linha);
 
             res.print();
