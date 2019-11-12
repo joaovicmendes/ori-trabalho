@@ -266,7 +266,7 @@ void RR(const std::string& tabela)
     }
 
     char lixo;
-    long int indice;
+    long int indice_novo, indice_ini, tam;
     std::string path("./tabelas/" + tabela + ".dat");
     std::fstream arquivo;
     Metadado mtd(tabela);
@@ -289,24 +289,24 @@ void RR(const std::string& tabela)
 
         for (int i = 0; i < it->second.size(); i++)
         {
-            Removido aux = mtd.get_removido();
+            indice_ini = mtd.get_removido();
 
             // Vai para a posição à ser removida
             arquivo.seekg(it->second.at(i));
-            indice  = arquivo.tellg();
+            indice_novo = arquivo.tellg();
             
             // Calcula o tamanho do registro atual (deletado)
             while (arquivo.peek() != '\n')
                 arquivo.get(lixo);
 
-            aux.tamanho = ((long int)arquivo.tellg()) - indice;
-            arquivo.seekg(indice);
+            tam = ((long int)arquivo.tellg()) - indice_novo;
+            arquivo.seekg(indice_novo);
 
             // Escreve no registro a próxima prosição removida na forma prox:tamanho_atual#
-            arquivo << aux.indice << ":" << aux.tamanho << "#";
+            arquivo << indice_ini << ":" << tam << "#";
 
             // Atualiza o começo da lista
-            mtd.set_removido(indice, 0);
+            mtd.set_removido(indice_novo);
         }
 
         arquivo.close();

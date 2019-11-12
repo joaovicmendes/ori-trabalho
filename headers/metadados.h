@@ -12,12 +12,6 @@ typedef struct campo
     char indice;     // (N: nenhum; A:árvore; H:hash)
 } Campo;
 
-typedef struct removido
-{
-    long int indice;  // Índice inicial do espeço removido
-    long int tamanho; // Tamanho do espaço removido
-} Removido;
-
 class Metadado
 {
     public:
@@ -37,7 +31,7 @@ class Metadado
     std::vector<Campo> get_campos() const;
 
     // Retorna um vector dos removidos dessa tabela
-    Removido get_removido() const;
+    long int get_removido() const;
 
     // Define à qual tabela pertence
     void set_tabela(const std::string& tabela);
@@ -46,7 +40,7 @@ class Metadado
     void add_campo(Campo c);
 
     // Adiciona o novo início da lista de removidos
-    void set_removido(long int ini, long int tam);
+    void set_removido(long int ini);
 
     // Altera o índice de dado campo
     void set_indice(const std::string& nome_campo, const char indice);
@@ -69,7 +63,7 @@ class Metadado
     private:
     std::string        tabela; // De qual tabela o metadado é referente
     std::vector<Campo> campos; // Campos da tabela
-    Removido    ini_removidos; // Lista de espaços removidos na tabela
+    long int    ini_removidos; // Lista de espaços removidos na tabela
     long int    pos_removidos; // Posição da lista de removidos nos metadados
 };
 
@@ -87,9 +81,5 @@ void insere_tabela(const char* path, const std::string& tabela);
 // Recebe o nome de uma tabela, e a remove do arquivo de metadados do sistema.
 // @param std::string: nome da tabela a ser removida
 void remove_tabela(const std::string& tabela);
-
-bool operator>(const Removido& a, const Removido& b);
-
-bool operator<(const Removido& a, const Removido& b);
 
 #endif

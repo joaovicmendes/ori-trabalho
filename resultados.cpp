@@ -29,7 +29,7 @@ std::vector<long int> busca_sequencial(const std::string& tabela, const std::str
 
     while (!atingiu_max && !arquivo.eof()) 
     {
-        if (linha.find("#") != std::string::npos)
+        if (linha.find('#') == std::string::npos)
         {
             Registro reg(mtd, linha);
             campos = reg.lista_campos();

@@ -9,12 +9,8 @@
 #include "./headers/metadados.h"
 
 Metadado::Metadado() 
-{ 
-    Removido r;
-    r.tamanho = 0;
-    r.indice = -1;
-    
-    this->ini_removidos = r;
+{   
+    this->ini_removidos = -1;
     this->pos_removidos = -1;
 }
 
@@ -69,7 +65,7 @@ Metadado::Metadado(const std::string& tabela)
         this->add_campo(c);
     }
 
-    fread(&this->ini_removidos, sizeof(long int), 2, arquivo);
+    fread(&this->ini_removidos, sizeof(long int), 1, arquivo);
 
     fclose(arquivo);
 }
@@ -89,7 +85,7 @@ std::vector<Campo> Metadado::get_campos() const
     return this->campos;
 }
 
-Removido Metadado::get_removido() const
+long int Metadado::get_removido() const
 {
     return this->ini_removidos;
 }
@@ -104,12 +100,9 @@ void Metadado::add_campo(Campo c)
     this->campos.push_back(c);
 }
 
-void Metadado::set_removido(long int ini, long int tam)
+void Metadado::set_removido(long int indice)
 {
-    Removido r;
-    r.tamanho = tam;
-    r.indice = ini;
-    this->ini_removidos = r;
+    this->ini_removidos = indice;
 
     if (this->pos_removidos != -1)
     {
@@ -117,7 +110,7 @@ void Metadado::set_removido(long int ini, long int tam)
         FILE *arquivo = fopen_safe(path.c_str(), "rb+");
         
         fseek(arquivo, this->pos_removidos, SEEK_SET);
-        fwrite(&this->ini_removidos, sizeof(long int), 2, arquivo);
+        fwrite(&this->ini_removidos, sizeof(long int), 1, arquivo);
 
         fclose(arquivo);
     }
@@ -229,7 +222,7 @@ void Metadado::save()
     fseek(arquivo, pos, SEEK_SET);
 
     // Escrevendo início da lista de vazios
-    fwrite(&this->ini_removidos, sizeof(long int), 2, arquivo);
+    fwrite(&this->ini_removidos, sizeof(long int), 1, arquivo);
 
     fclose(arquivo);
 }
@@ -249,7 +242,7 @@ void Metadado::print() const
         std::cout << " (" << this->campos.at(i).indice << ")\n";
     }
 
-    std::cout << "  Início Removidos: (" << this->ini_removidos.indice << ", " << this->ini_removidos.tamanho << ")\n";
+    std::cout << "  Início Removidos: (" << this->ini_removidos << ")\n";
 }
 
 
@@ -316,14 +309,4 @@ void remove_tabela(const std::string& tabela)
 
     remove(SGBD_PATH);
     rename("./metadados/tmp", SGBD_PATH);
-}
-
-bool operator>(const Removido& a, const Removido& b)
-{
-    return (a.tamanho > b.tamanho);
-}
-
-bool operator<(const Removido& a, const Removido& b)
-{
-    return (a.tamanho < b.tamanho);
 }
