@@ -26,6 +26,12 @@ class Registro
     // Adiciona ao fim do arquivo de registros da this->tabela
     void append();
 
+    // Adiciona a pos do arquivo de registros da this->tabela
+    void insert(long pos);
+
+    // Retorna o tamanho dos valores do registro (inclui os ;)
+    long int length();
+
     // Imprime conteúdos do registro
     void print();
 

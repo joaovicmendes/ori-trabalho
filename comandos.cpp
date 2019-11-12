@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -11,6 +12,7 @@
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
 #include "./headers/resultados.h"
+#include "./headers/reaproveitamento.h"
 
 std::map<std::string, std::vector<long int> > lista_resultados;
 
@@ -159,7 +161,12 @@ void IR(const std::string& tabela, const std::string& registro)
     Registro reg(mtd, registro);
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
     reg.print();
-    reg.append();
+
+    long int pos = busca_removido(mtd, reg.length());
+    if (pos != -1)
+        reg.insert(pos);
+    else
+        reg.append();
 }
 
 void RI(const std::string& tabela, const std::string& chave) 
@@ -303,7 +310,7 @@ void RR(const std::string& tabela)
             arquivo.seekg(indice_novo);
 
             // Escreve no registro a próxima prosição removida na forma prox:tamanho_atual#
-            arquivo << indice_ini << ":" << tam << "#";
+            arquivo << std::setw(sizeof(long)) << indice_ini << ":" << std::setw(sizeof(long)) << tam << "#";
 
             // Atualiza o começo da lista
             mtd.set_removido(indice_novo);

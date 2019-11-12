@@ -53,6 +53,40 @@ void Registro::append()
     arquivo.close();
 }
 
+void Registro::insert(long pos)
+{
+    std::string path("./tabelas/" + this->tabela + ".dat");
+    std::fstream arquivo(path);
+
+    if (!arquivo.is_open())
+    {
+        std::cout << "Arquivo '" << path << "' não encontrado\n";
+        EB();
+    }
+
+    arquivo.seekg(pos);
+
+    for (int i = 0; i < this->campos.size(); i++)
+    {
+        arquivo << this->campos.at(i).valor;
+        if (i + 1 != this->campos.size())
+            arquivo << ";";
+    }
+    arquivo << "\n";
+
+    arquivo.close();
+}
+
+
+long int Registro::length()
+{
+    long int sz = 0;
+    for (int i = 0; i < this->campos.size(); i++)
+        sz += this->campos.at(i).valor.length();
+    
+    return sz + (this->campos.size() -  1);
+}
+
 std::vector<Reg> Registro::lista_campos()
 {
     return this->campos;
