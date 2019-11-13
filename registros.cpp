@@ -9,6 +9,7 @@
 #include "./headers/interpretador.h"
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
+#include "./headers/reaproveitamento.h"
 
 Registro::Registro(const Metadado& mtd, const std::string& registro)
 {
@@ -33,6 +34,7 @@ Registro::Registro(const Metadado& mtd, const std::string& registro)
 
 void Registro::append()
 {
+    std::string registro;
     std::string path("./tabelas/" + this->tabela + ".dat");
     std::ofstream arquivo(path, std::ios::out | std::ios::ate | std::ios::app);
 
@@ -44,10 +46,14 @@ void Registro::append()
 
     for (int i = 0; i < this->campos.size(); i++)
     {
-        arquivo << this->campos.at(i).valor;
+        registro += this->campos.at(i).valor;
         if (i + 1 != this->campos.size())
-            arquivo << ";";
+            registro += ";";
     }
+    while (registro.size() < MIN_REG_SZ)
+        registro += "#";
+
+    arquivo << registro;
     arquivo << "\n";
 
     arquivo.close();
@@ -55,6 +61,7 @@ void Registro::append()
 
 void Registro::insert(long pos)
 {
+    std::string registro;
     std::string path("./tabelas/" + this->tabela + ".dat");
     std::fstream arquivo(path);
 
@@ -68,10 +75,14 @@ void Registro::insert(long pos)
 
     for (int i = 0; i < this->campos.size(); i++)
     {
-        arquivo << this->campos.at(i).valor;
+        registro += this->campos.at(i).valor;
         if (i + 1 != this->campos.size())
-            arquivo << ";";
+            registro += ";";
     }
+    while (registro.size() < MIN_REG_SZ)
+        registro += "#";
+
+    arquivo << registro;
 
     arquivo.close();
 }
@@ -82,8 +93,12 @@ long Registro::length()
     long sz = 0;
     for (int i = 0; i < this->campos.size(); i++)
         sz += this->campos.at(i).valor.length();
-    
-    return sz + (this->campos.size() -  1);
+    sz += (this->campos.size() -  1);
+
+    if (MIN_REG_SZ > sz)
+        sz = MIN_REG_SZ;
+
+    return sz;
 }
 
 std::vector<Reg> Registro::lista_campos()

@@ -27,7 +27,7 @@ long busca_removido(Metadado& mtd, long tam)
         if (sz >= tam)
         {
             // Fragmentação interna
-            if (sz - tam < 25)
+            if (sz - tam < MIN_REG_SZ)
             {
                 arquivo.seekg(aux + tam);
                 for (int i = 0; i < sz - tam; i++)
@@ -36,7 +36,7 @@ long busca_removido(Metadado& mtd, long tam)
             // Fragmentação externa
             else
             {
-                arquivo.seekg(aux + tam + 1);
+                arquivo.seekg(aux + tam);
                 arquivo << "\n";
                 int indice_frag = arquivo.tellg();
 
@@ -46,9 +46,9 @@ long busca_removido(Metadado& mtd, long tam)
 
                 // Cria novo espaço alocado
                 arquivo.seekg(indice_frag);
-                arquivo << std::setw(sizeof(long)) << prox;
+                arquivo << std::setw(LONG_SZ) << prox;
                 arquivo << ":";
-                arquivo << std::setw(sizeof(long)) << tam_frag;
+                arquivo << std::setw(LONG_SZ) << tam_frag;
                 arquivo << "#";
 
                 // Atualiza aux para apontar para o novo espaço alocado
@@ -62,7 +62,7 @@ long busca_removido(Metadado& mtd, long tam)
             else
             {
                 arquivo.seekg(prev);
-                arquivo << std::setw(sizeof(long)) << prox;
+                arquivo << std::setw(LONG_SZ) << prox;
             }
         }
 
