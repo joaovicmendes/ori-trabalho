@@ -46,13 +46,19 @@ class Metadado
     void set_indice(const std::string& nome_campo, const char indice);
 
     // Retorna qual o índice em campo (N: nenhum; A:árvore; H:hash)
-    char indice_em(std::string campo) const;
+    char indice_em(const std::string& campo) const;
 
     // Se existe índice hash em campo
-    bool hash_em(std::string campo) const;
+    bool hash_em(const std::string& campo) const;
 
     // Se existe índice árvore em campo
-    bool arvore_em(std::string campo) const;
+    bool arvore_em(const std::string& campo) const;
+
+    // Retorna se dado campo existe na tabela
+    bool tem(const std::string& campo) const;
+
+    // Retorna o tipo do campo na tabela
+    std::string tipo_de(const std::string& campo) const;
 
     // Salva no arquivo
     void save();

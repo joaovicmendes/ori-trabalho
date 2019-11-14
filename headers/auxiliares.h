@@ -47,4 +47,9 @@ FILE *fopen_safe(const char *path, const char *modo);
 // @ret   std::vector<std::string>
 std::vector<std::string> str_tokenize(const std::string& texto, const char delim);
 
+// Retorna o número de registros de tabela (conta o número de \n)
+// @param  str::string : tabela na qual os registros devem ser contados
+// @ret           long : num de registros
+long reg_count(const std::string& tabela);
+
 #endif

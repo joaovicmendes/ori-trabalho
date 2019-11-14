@@ -133,7 +133,7 @@ void Metadado::set_indice(const std::string& nome_campo, const char indice)
     }
 }
 
-char Metadado::indice_em(std::string campo) const
+char Metadado::indice_em(const std::string& campo) const
 {
     for (int i = 0; i < this->campos.size(); i++)
     {
@@ -145,7 +145,7 @@ char Metadado::indice_em(std::string campo) const
     return '\0';
 }
 
-bool Metadado::hash_em(std::string campo) const
+bool Metadado::hash_em(const std::string& campo) const
 {
     for (int i = 0; i < this->campos.size(); i++)
     {
@@ -162,7 +162,7 @@ bool Metadado::hash_em(std::string campo) const
     return false;
 }
 
-bool Metadado::arvore_em(std::string campo) const
+bool Metadado::arvore_em(const std::string& campo) const
 {
     for (int i = 0; i < this->campos.size(); i++)
     {
@@ -178,6 +178,27 @@ bool Metadado::arvore_em(std::string campo) const
     // Se campo não encontrado
     return false;
 }
+
+bool Metadado::tem(const std::string& campo) const
+{
+    for (int i = 0; i < this->campos.size(); i++)
+        if (this->campos.at(i).nome == campo) 
+            return true;
+
+    // Se campo não encontrado
+    return false;
+}
+
+std::string Metadado::tipo_de(const std::string& campo) const
+{
+    for (int i = 0; i < this->campos.size(); i++)
+        if (this->campos.at(i).nome == campo) 
+            return this->campos.at(i).tipo;
+
+    // Se campo não encontrado
+    return "";
+}
+
 
 void Metadado::save()
 {

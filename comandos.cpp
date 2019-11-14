@@ -9,6 +9,7 @@
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
 #include "./headers/interpretador.h"
+#include "./headers/hash.h"
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
 #include "./headers/resultados.h"
@@ -118,8 +119,9 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
 
     if (indice_campo == 'H')
     {
-        std::cout << "Busca em índice hash realizada (não implementada)\n";
-        resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
+        std::string path("./indices/" + tabela + "_" + vec.front() + ".dat");
+        std::cout << "Busca em índice hash realizada\n";
+        resultados = busca_hash(modo, path, stol(vec.back()) );
     }
     else if (indice_campo == 'A')
     {
@@ -146,7 +148,67 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
 
 void CI(const std::string& modo, const std::string& tabela, const std::string& chave) 
 {
-    std::cout << "Comando 'CI' '" + modo + "' '" + tabela + "' '" + chave + "' (não implementado)\n";
+    std::string index_path;
+    std::fstream arquivo;
+
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    Metadado mtd(tabela);
+    index_path.assign("./indices/" + tabela + "_" + chave + ".dat");
+
+    // Verificando se campo existe
+    if (!mtd.tem(chave))
+    {
+        std::cout << "Criação de Índice inválida: campo '" << chave << "' não existente em '" << tabela << "'\n";
+        EB();
+    }
+
+    // Verificando se campo é do tipo INT
+    if (mtd.tipo_de(chave) != "INT")
+    {
+        std::cout << "Criação de Índice inválida: campo '" << chave << "' não é INT\n";
+        return;
+    }
+
+    // Verificando se não existe índice
+    if (mtd.indice_em(chave) != 'N')
+    {
+        std::cout << "Criação de Índice inválida: campo '" << chave << "' já possui índice\n";
+        return;
+    }
+
+    // Criando arquivo de índice
+    arquivo.open(index_path, std::fstream::out);
+    if (!arquivo.is_open())
+    {
+        std::cout << "Não conseguiu criar arquivo de índice\n";
+        EB();
+    }
+    arquivo.close();
+
+    // Construindo índice hash
+    if (modo == "H")
+    {
+        std::cout << "Criando índice hash em '" << chave << "'\n";
+        inicializa_hash(index_path, reg_count(tabela));
+
+        preenche_indice_hash(mtd, index_path, chave);
+
+        mtd.set_indice(chave, 'H');
+        mtd.save();        
+    }
+    // Construindo índice árvore
+    else
+    {
+        std::cout << "Criando índice árvore em '" << chave << "' (não implementado)\n";
+
+        mtd.set_indice(chave, 'A');
+        mtd.save();
+    }
 }
 
 void IR(const std::string& tabela, const std::string& registro) 
@@ -173,6 +235,18 @@ void IR(const std::string& tabela, const std::string& registro)
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
     reg.print();
 
+    // Tratando a existência de índice hash
+    std::vector<Campo> campos = mtd.get_campos();
+    for (int i = 0; i < campos.size(); i++)
+    {
+        if (mtd.hash_em(campos.at(i).nome))
+        {
+            std::cout << "Inserção inválida: índice hash existente em '" << campos.at(i).nome << "'\n";
+            return;
+        }
+    }
+
+    // Inserindo no espaço adequado
     long pos = busca_removido(mtd, reg.length());
     if (pos != -1)
         reg.insert(pos);
@@ -182,22 +256,114 @@ void IR(const std::string& tabela, const std::string& registro)
 
 void RI(const std::string& tabela, const std::string& chave) 
 {
-    std::cout << "Comando 'RI' '" + tabela + "' '" + chave + "' (não implementado)\n";    
+    std::string index_path("./indices/" + tabela + "_" + chave + ".dat");
+    std::fstream arquivo;
+
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    Metadado mtd(tabela);
+
+    // Verificando se campo existe
+    if (!mtd.tem(chave))
+    {
+        std::cout << "Remoção de Índice inválida: campo '" << chave << "' não existente em '" << tabela << "'\n";
+        return;
+    }
+
+    // Verificando se campo é do tipo INT
+    if (mtd.tipo_de(chave) != "INT")
+    {
+        std::cout << "Remoção de Índice inválida: campo '" << chave << "' não é INT\n";
+        return;
+    }
+
+    // Verificando se ainda existe índice
+    if (mtd.indice_em(chave) == 'N')
+    {
+        std::cout << "Remoção de Índice inválida: campo '" << chave << "' não possui índice\n";
+        return;
+    }
+
+    remove(index_path.c_str());
+
+    std::cout << "Índice em ";
+    if (mtd.indice_em(chave) == 'H')
+        std::cout << "hash";
+    else
+        std::cout << "árvore";
+    std::cout << " de '" << chave << "' removido com sucesso\n";
+
+    mtd.set_indice(chave, 'N');
+    mtd.save();
 }
 
 void GI(const std::string& tabela, const std::string& chave) 
 {
-    std::cout << "Comando 'GI' '" + tabela + "' '" + chave + "' (não implementado)\n";    
+    if (!tem_tabela(tabela))
+    {
+        std::cout << "Tabela '" << tabela << "' não existe na base de dados\n";
+        EB();
+    }
+
+    Metadado   mtd(tabela);
+    std::string index_path;
+    std::fstream   arquivo;
+
+    // Verificando se campo existe
+    if (!mtd.tem(chave))
+    {
+        std::cout << "Recriação de Índice inválida: campo '" << chave << "' não existente em '" << tabela << "'\n";
+        return;
+    }
+
+    // Verificando se campo é do tipo INT
+    if (mtd.tipo_de(chave) != "INT")
+    {
+        std::cout << "Recriação de Índice inválida: campo '" << chave << "' não é INT\n";
+        return;
+    }
+
+    // Verificando se existe índice
+    if (mtd.indice_em(chave) == 'N')
+    {
+        std::cout << "Recriação de Índice inválida: campo '" << chave << "' não possui índice\n";
+        return;
+    }
+
+    index_path.assign("./indices/" + tabela + "_" + chave + ".dat");
+
+    arquivo.open(index_path, std::fstream::out | std::fstream::trunc);
+    arquivo.close();
+
+    if (mtd.hash_em(chave))
+    {
+        inicializa_hash(index_path, reg_count(tabela));
+        preenche_indice_hash(mtd, index_path, chave);
+    }
+    else if (mtd.arvore_em(chave))
+    {
+
+    }
+
+    std::cout << "Índice de '" << chave << "' recriado com sucesso\n";
 }
 
 void RT(const std::string& tabela) 
 {
-    std::string path;
+    std::string          path;
+    std::vector<Campo> campos;
+
     if (!tem_tabela(tabela))
     {
         std::cout << "Tabela não existente na base de dados\n";
         EB();
     }
+
+    Metadado mtd(tabela);
 
     // Removendo dos metadados do sistema
     remove_tabela(tabela);
@@ -206,9 +372,20 @@ void RT(const std::string& tabela)
     path.assign("./metadados/" + tabela + ".dat");
     remove(path.c_str());
 
-    // Rmovendo o arquivo da tabela
+    // Removendo o arquivo da tabela
     path.assign("./tabelas/" + tabela + ".dat");
     remove(path.c_str());
+
+    // Removendo índices desta tabela
+    campos = mtd.get_campos();
+    for (int i = 0; i < campos.size(); i++)
+    {
+        if (mtd.indice_em(campos.at(i).nome) != 'N')
+        {
+            path.assign("./indices/" + tabela + "_" + campos.at(i).nome + ".dat");
+            remove(path.c_str());
+        }
+    }
 
     std::cout << "Tabela '" << tabela << "' removida com sucesso\n";
 }
@@ -289,6 +466,17 @@ void RR(const std::string& tabela)
     std::string path("./tabelas/" + tabela + ".dat");
     std::fstream arquivo;
     Metadado mtd(tabela);
+
+    // Tratando a existência de índice hash
+    std::vector<Campo> campos = mtd.get_campos();
+    for (int i = 0; i < campos.size(); i++)
+    {
+        if (mtd.hash_em(campos.at(i).nome))
+        {
+            std::cout << "Remoção inválida: índice hash existente em '" << campos.at(i).nome << "'\n";
+            return;
+        }
+    }
 
     std::map<std::string, std::vector<long> >::iterator it;
     it = lista_resultados.find(tabela);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <cctype>
 
 #include "./headers/auxiliares.h"
@@ -93,4 +94,20 @@ std::vector<std::string> str_tokenize(const std::string& texto, const char delim
         tokens.push_back(tmp);
 
     return tokens;
+}
+
+long reg_count(const std::string& tabela)
+{
+    std::fstream arquivo("./tabelas/" + tabela + ".dat");    
+    char c = 0;
+    int i  = 0;
+
+    while (!arquivo.eof())
+    {
+        arquivo.get(c);
+        if (c == '\n')
+            i++;
+    }
+
+    return i;
 }
