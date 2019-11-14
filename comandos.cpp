@@ -311,7 +311,7 @@ void RR(const std::string& tabela)
             arquivo.seekg(indice_novo);
 
             // Escreve no registro a próxima prosição removida na forma prox:tamanho_atual#
-            arquivo << std::setw(sizeof(long)) << indice_ini << ":" << std::setw(sizeof(long)) << tam << "#";
+            arquivo << std::setw(LONG_SZ) << indice_ini << ":" << std::setw(LONG_SZ) << tam << "#";
 
             // Atualiza o começo da lista
             mtd.set_removido(indice_novo);

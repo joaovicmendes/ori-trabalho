@@ -1,8 +1,8 @@
 CT CLIENTES INT:CODIGO;STR:NOME;BIN:CERTIF
 IR CLIENTES 10;JOSE DA SILVA;jose_cert.crt
 IR CLIENTES 10;JOAO PASCOAL;joao_p_cert.crt
-IR CLIENTES 11;joão victor;joao_cert.crt
-IR CLIENTES 11;JOAO PASCOAL;joao_pppppppppppppppppp
+IR CLIENTES 11;joao victor;joao_cert.crt
+IR CLIENTES 11;JOAO PASCOAL;joao_pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp
 IR CLIENTES 1;a;b
 
 BR U CLIENTES NOME:JOAO PASCOAL
@@ -11,6 +11,7 @@ BR N CLIENTES NOME:JOAO PASCOAL
 AR CLIENTES
 
 RR CLIENTES
+eb
 IR CLIENTES 1;a;b
 
 EB

@@ -27,7 +27,7 @@ long busca_removido(Metadado& mtd, long tam)
         if (sz >= tam)
         {
             // Fragmentação interna
-            if (sz - tam < MIN_REG_SZ)
+            if (sz - tam < MIN_REG_SZ + 1)
             {
                 arquivo.seekg(aux + tam);
                 for (int i = 0; i < sz - tam; i++)
@@ -42,7 +42,6 @@ long busca_removido(Metadado& mtd, long tam)
 
                 getline(arquivo, input);
                 int tam_frag = ((long)arquivo.tellg()) - indice_frag - 1;
-
 
                 // Cria novo espaço alocado
                 arquivo.seekg(indice_frag);
