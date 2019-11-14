@@ -23,6 +23,31 @@ Registro::Registro(const Metadado& mtd, const std::string& registro)
 
     for (int i = 0; i < vec.size(); i++)
     {
+        if (campos.at(i).tipo == "INT")
+        {
+            try 
+            {
+                stol(vec.at(i));
+            }
+            catch (...)
+            {
+                std::cout << "Inserção inválida: valor não numérico em campo INT\n";
+                EB();
+            }
+        }
+        else if (campos.at(i).tipo == "FLT")
+        {
+            try
+            {
+                stof(vec.at(i));
+            }
+            catch (...)
+            {
+                std::cout << "Inserção inválida: valor não numérico em campo FLT\n";
+                EB();
+            }
+        }
+
         Reg r;
         r.tipo = campos.at(i).tipo;
         r.nome_campo = campos.at(i).nome;

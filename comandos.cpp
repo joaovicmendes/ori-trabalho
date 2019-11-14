@@ -157,6 +157,17 @@ void IR(const std::string& tabela, const std::string& registro)
         EB();
     }
 
+    if (registro.find("#") != std::string::npos)
+    {
+        std::cout << "Inserção inválida: caracter proibido (#) encontrado\n";
+        return;
+    }
+    else if (registro.find(":") != std::string::npos)
+    {
+        std::cout << "Inserção inválida: caracter proibido (:) encontrado\n";
+        return;
+    }
+
     Metadado mtd(tabela);
     Registro reg(mtd, registro);
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
