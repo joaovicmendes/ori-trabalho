@@ -4,7 +4,7 @@
 #include "metadados.h"
 
 #define PAIR_SIZE (2 * sizeof(long))
-#define BLOCK_CAP 10
+#define BLOCK_CAP 128
 #define BLOCK_SIZE (PAIR_SIZE * (BLOCK_CAP + 1))
 
 typedef struct par

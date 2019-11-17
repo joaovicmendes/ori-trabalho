@@ -145,7 +145,7 @@ void insere_bloco(FILE *arquivo, long index, Par p)
         blk.num_elem++;
 
         // Ordena as posições válidas
-        std::sort(std::begin(blk.arr), std::begin(blk.arr) + blk.num_elem, std::less<Par>());       
+        // std::sort(std::begin(blk.arr), std::begin(blk.arr) + blk.num_elem, std::less<Par>());       
 
         salva_bloco(arquivo, index, blk);
     }
