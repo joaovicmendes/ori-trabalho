@@ -2,3 +2,4 @@ main
 *.txt
 *.dat
 sgdb
+*.sh
