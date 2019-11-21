@@ -16,9 +16,13 @@ typedef struct reg
 class Registro
 {
     public:
-    // Construtor para criar um novo registro, recebe uma lista de valores 
+    // Construtor para recortar um registro, recebe uma lista de valores 
     // separada por ;
     Registro(const Metadado& mtd, const std::string& registro);
+
+    // Construtor para criar um novo registro, recebe uma lista de valores
+    // separada por ;
+    Registro(const Metadado& mtd, const std::string& registro, bool novo);
 
     // Retorna this->campos
     std::vector<Reg> lista_campos();

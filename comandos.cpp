@@ -105,6 +105,12 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     if (vec.size() != 2)
         erro_sintaxe(2);
 
+    if (mtd.tipo_de( vec.front() ) == "BIN")
+    {
+        std::cout << "Busca em campo BIN não permitida\n";
+        return;
+    }
+
     // Procurando se existe o campo e qual seu indice
     char indice_campo = mtd.indice_em( vec.front() );
     if  (indice_campo == '\0')
@@ -231,7 +237,7 @@ void IR(const std::string& tabela, const std::string& registro)
     }
 
     Metadado mtd(tabela);
-    Registro reg(mtd, registro);
+    Registro reg(mtd, registro, true);
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
     reg.print();
 
