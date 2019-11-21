@@ -22,12 +22,14 @@ Arquivos
 - [`resultados.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/resultados.cpp) arquivo com funções referentes à busca sequêncial.
 - [`roteiro.txt`](https://github.com/joaovicmendes/ori-trabalho/blob/master/roteiro.cpp) caso de teste curto, para testar durante o desenvolvimento das funções.
 
+
 # Ciclo 1 – Interpretador de comandos e estruturação dos metadados para a base
   Existem dois tipos de metadados: do sistema e de cada tabela.
 
   Os metadados do sistema estão armazenados no arquivo `metadados/sgdb`, e contem apenas o nome das tabelas existentes na base. Estão no formato `[TAM_NOME_TABELA][NOME_TABELA]`.
 
   Os metadados de cada tabela estão armazenados no arquivo `metadados/nome_tabela.dat`, e contém dados no formato `[POS_REMOVIDOS][TAM_NOME_TABELA][NOME_TABELA][NUM_CAMPOS][TAM_TIPO_CAMPO][TIPO_CAMPO][TAM_NOME_CAMPO][NOME_CAMPO][TIPO_INDICE]...[INI_REMOVIDOS]`.
+
 
 # Ciclo 2 – Criação e remoção de tabela e operações de inserção e busca
   Os resultados de busca de uma seção são armazenados em um `std::map` em que a chave é o nome da tabela e o conteúdo é um `std::vector<long>`, com as posições enocntradas.
@@ -36,6 +38,7 @@ Arquivos
 
   As operações de remoção de registro e de apresentação de resultados abrem o arquivo e posicionam o ponteiro nas posições presentes no vector.
 
+
 # Ciclo 3 - Remoção de registros e implementação da estratégia de reuso de espaço
   Para marcar uma remoção, percisamos escrever no arquivo `prox:tam#`, onde prox e tam são `long`. Por isso, acabou sendo necessário definir um tamanho mínimo de registro, de forma que a marcação de remoção não sobrescrevesse partes indevidas do arquivo. Definiu-se o tamanho de 40 bytes como mínimo, e registros menores que isso tem uma fragmentação interna, marcada por vários `#`.
 
@@ -43,11 +46,14 @@ Arquivos
 
   Se, ao adicionarmos um novo registro numa posição que havia sido removida anteriormente, "sobrarem" mais de 41 bytes, então adicionamos um `\n` ao fim dos dados inseridos (levando em conta o valor mínimo) e os demais bytes são tratados como uma nova posição à ser reutilizada (é adicionada à lista de removidos com os campos prox e tam atualizados). Se sobram menos que 41 bytes, fragmentação interna é adicionada.
 
+
 # Ciclo 4 – Incorporação da indexação aos metadados
   Valor [TIPO_INDICE] foram adicionados aos metadados da tabela para cada campo, nos quais `N` que dizer que não há índice, `A` quer dizer índice em àrvore B e `H` índice em hash.
 
+
 # Ciclo 5 – Indexação com árvores de multiplos caminhos
   Ainda não implementado!
+
 
 # Ciclo 6 – Indexação com hash
   Seja a, b números primos, k a chave e M o número de baldes iniciais, a função de hashing é (a * k + b) mod M. Esse valor indica em qual dos baldes iniciais o conteúdo deveria ser adicionado, e deve ser multiplicado por BLOCK_SIZE para encontrar o endereço do bloco no arquivo. É uma função clássica, de custo computacional baixo, determinista com distribuição uniforme.
