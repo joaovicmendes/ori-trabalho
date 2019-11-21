@@ -248,6 +248,9 @@ void imprime_hash(const std::string& path)
 
 void preenche_indice_hash(const Metadado& mtd, const std::string& index_path, const std::string& chave)
 {
+    long         qtd_blocos;
+    long              index;
+    FILE*      arquivo_hash;
     std::fstream    arquivo;
     std::string path_tabela("./tabelas/" + mtd.get_tabela() + ".dat");
     std::string       linha;
@@ -258,9 +261,19 @@ void preenche_indice_hash(const Metadado& mtd, const std::string& index_path, co
     arquivo.open(path_tabela, std::fstream::in);
     if (!arquivo.is_open())
     {
-        std::cout << "Não pode abrir arquivo de índice '" << index_path << "'\n";
+        std::cout << "Não pode abrir arquivo de tabela '" << path_tabela << "'\n";
         EB();
     }
+
+    arquivo_hash = fopen(index_path.c_str(), "rb+");
+    if (arquivo_hash == NULL)
+    {
+        std::cout << "Erro ao abrir o arquivo " + index_path + "\n";
+        exit(1);
+    }
+
+    // Obtendo número de blocos (iniciais) na hash em questão
+    fread(&qtd_blocos, sizeof(qtd_blocos), 1, arquivo_hash);
 
     p.cont = arquivo.tellg();
     getline(arquivo, linha);
@@ -279,7 +292,12 @@ void preenche_indice_hash(const Metadado& mtd, const std::string& index_path, co
                 if (campos.at(i).nome_campo == chave)
                 {
                     p.chave = stol(campos.at(i).valor);
-                    insere_hash(index_path, p);
+
+                    // Indice é qual bloco deve ser inserido, obtendo o número
+                    // do bloco - 1 e multiplicando por BLOCK_SIZE
+                    index = (hash_func(p.chave, qtd_blocos) * BLOCK_SIZE) + sizeof(qtd_blocos);
+
+                    insere_bloco(arquivo_hash, index, p);
                 }
             }
         }
@@ -288,5 +306,6 @@ void preenche_indice_hash(const Metadado& mtd, const std::string& index_path, co
         getline(arquivo, linha);
     }
 
+    fclose(arquivo_hash);
     arquivo.close();
 }
