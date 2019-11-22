@@ -38,14 +38,26 @@ std::vector<long> busca_sequencial(const std::string& tabela, const std::string&
 
             for (int i = 0; i < campos.size(); i++)
             {
-    
                 if (campos.at(i).nome_campo == campo)
                 {
-                    if (campos.at(i).valor == chave) 
+                    if (campos.at(i).tipo == "STR")
                     {
-                        resultados.push_back(pos);
-                        if (modo == "U")
-                            atingiu_max = 1;
+                        // Busca em string considera chave como parte do conteúdo
+                        if (campos.at(i).valor.find(chave) != std::string::npos) 
+                        {
+                            resultados.push_back(pos);
+                            if (modo == "U")
+                                atingiu_max = 1;
+                        }
+                    }
+                    else
+                    {
+                        if (campos.at(i).valor == chave)
+                        {
+                            resultados.push_back(pos);
+                            if (modo == "U")
+                                atingiu_max = 1;
+                        }
                     }
                 }
             }

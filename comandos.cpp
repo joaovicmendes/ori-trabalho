@@ -150,6 +150,7 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     {
         lista_resultados[tabela] = resultados;
     }
+    std::cout << "### BR = " << resultados.size() << "\n";
 }
 
 void CI(const std::string& modo, const std::string& tabela, const std::string& chave) 
@@ -366,7 +367,7 @@ void RT(const std::string& tabela)
     if (!tem_tabela(tabela))
     {
         std::cout << "Tabela não existente na base de dados\n";
-        EB();
+        return;
     }
 
     Metadado mtd(tabela);
