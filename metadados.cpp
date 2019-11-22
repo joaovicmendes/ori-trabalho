@@ -324,7 +324,7 @@ void remove_tabela(const std::string& tabela)
         free(buffer);
 
         if (tmp != tabela)
-            insere_tabela("./metadados/tmp", tabela);
+            insere_tabela("./metadados/tmp", tmp);
     }
     fclose(arquivo);
 

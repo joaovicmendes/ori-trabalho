@@ -2,7 +2,7 @@
 # Com adições das aulas de AED1 do Prof. Mário 
 
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -pedantic
+CXXFLAGS = -std=c++11 -Wall -pedantic -O3
 
 OBJECTS = main.o interpretador.o comandos.o auxiliares.o metadados.o registros.o resultados.o reaproveitamento.o hash.o
 

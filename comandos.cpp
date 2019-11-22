@@ -240,7 +240,7 @@ void IR(const std::string& tabela, const std::string& registro)
     Metadado mtd(tabela);
     Registro reg(mtd, registro, true);
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
-    // reg.print();
+    reg.print();
 
     // Tratando a existência de índice hash
     std::vector<Campo> campos = mtd.get_campos();
