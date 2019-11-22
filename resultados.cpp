@@ -48,24 +48,11 @@ std::vector<long> busca_sequencial(const Metadado& mtd, const std::string& tabel
             Registro reg(mtd, linha);
             registro = reg.lista_campos();
 
-            if (registro.at(indice).tipo == "STR")
+            if (registro.at(indice).valor == chave)
             {
-                // Busca em string considera chave como parte do conteúdo
-                if (registro.at(indice).valor.find(chave) != std::string::npos) 
-                {
-                    resultados.push_back(pos);
-                    if (modo == "U")
-                        atingiu_max = 1;
-                }
-            }
-            else
-            {
-                if (registro.at(indice).valor == chave)
-                {
-                    resultados.push_back(pos);
-                    if (modo == "U")
-                        atingiu_max = 1;
-                }
+                resultados.push_back(pos);
+                if (modo == "U")
+                    atingiu_max = 1;
             }
         }
         
