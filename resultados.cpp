@@ -7,19 +7,31 @@
 #include "./headers/registros.h"
 #include "./headers/resultados.h"
 
-std::vector<long> busca_sequencial(const std::string& tabela, const std::string& modo, const std::string& campo, const std::string& chave)
+std::vector<long> busca_sequencial(const Metadado& mtd, const std::string& tabela, const std::string& modo, const std::string& campo, const std::string& chave)
 {
-    Metadado mtd(tabela);
-
     char atingiu_max = 0;
+    int indice = -1;
     std::vector<long> resultados;
-    std::vector<Reg> campos;
+    std::vector<Reg> registro;
+    std::vector<Campo> campos = mtd.get_campos();
     std::string linha;
 
     std::ifstream arquivo("./tabelas/" + tabela + ".dat");
     if (!arquivo.is_open())
     {
         std::cout << "Arquivo '" << tabela << "' não encontrado\n";
+        EB();
+    }
+
+    // Encontrando campo
+    for (int i = 0; i < campos.size(); i++)
+    {
+        if (campos.at(i).nome == campo)
+            indice = i;
+    }
+    if (indice == -1)
+    {
+        std::cout << "Campo não encontrado\n";
         EB();
     }
 
@@ -34,31 +46,25 @@ std::vector<long> busca_sequencial(const std::string& tabela, const std::string&
         {
             linha = linha.substr(0, linha.find("#"));
             Registro reg(mtd, linha);
-            campos = reg.lista_campos();
+            registro = reg.lista_campos();
 
-            for (int i = 0; i < campos.size(); i++)
+            if (registro.at(indice).tipo == "STR")
             {
-                if (campos.at(i).nome_campo == campo)
+                // Busca em string considera chave como parte do conteúdo
+                if (registro.at(indice).valor.find(chave) != std::string::npos) 
                 {
-                    if (campos.at(i).tipo == "STR")
-                    {
-                        // Busca em string considera chave como parte do conteúdo
-                        if (campos.at(i).valor.find(chave) != std::string::npos) 
-                        {
-                            resultados.push_back(pos);
-                            if (modo == "U")
-                                atingiu_max = 1;
-                        }
-                    }
-                    else
-                    {
-                        if (campos.at(i).valor == chave)
-                        {
-                            resultados.push_back(pos);
-                            if (modo == "U")
-                                atingiu_max = 1;
-                        }
-                    }
+                    resultados.push_back(pos);
+                    if (modo == "U")
+                        atingiu_max = 1;
+                }
+            }
+            else
+            {
+                if (registro.at(indice).valor == chave)
+                {
+                    resultados.push_back(pos);
+                    if (modo == "U")
+                        atingiu_max = 1;
                 }
             }
         }

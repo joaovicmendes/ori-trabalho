@@ -117,27 +117,27 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
         erro_sintaxe(2);
 
     // Imprimindo modo de operação apropriado
-    if (modo == "N")
-        std::cout << "Buscando registros '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
-    else
-        std::cout << "Buscando primeiro registro '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
+    // if (modo == "N")
+    //     std::cout << "Buscando registros '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
+    // else
+    //     std::cout << "Buscando primeiro registro '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
 
 
     if (indice_campo == 'H')
     {
         std::string path("./indices/" + tabela + "_" + vec.front() + ".dat");
-        std::cout << "Busca em índice hash realizada\n";
+        // std::cout << "Busca em índice hash realizada\n";
         resultados = busca_hash(modo, path, stol(vec.back()) );
     }
     else if (indice_campo == 'A')
     {
-        std::cout << "Busca em índice árvore realizada (não implementada)\n";
-        resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
+        // std::cout << "Busca em índice árvore realizada (não implementada)\n";
+        resultados = busca_sequencial(mtd, tabela, modo, vec.front(), vec.back());
     }
     else
     {
-        std::cout << "Busca sequencial realizada\n";
-        resultados = busca_sequencial(tabela, modo, vec.front(), vec.back());
+        // std::cout << "Busca sequencial realizada\n";
+        resultados = busca_sequencial(mtd, tabela, modo, vec.front(), vec.back());
     }
 
     std::map<std::string, std::vector<long> >::iterator it;
@@ -240,7 +240,7 @@ void IR(const std::string& tabela, const std::string& registro)
     Metadado mtd(tabela);
     Registro reg(mtd, registro, true);
     std::cout << "Inserindo registro na tabela '" << tabela << "'\n";
-    reg.print();
+    // reg.print();
 
     // Tratando a existência de índice hash
     std::vector<Campo> campos = mtd.get_campos();
