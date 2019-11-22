@@ -116,11 +116,11 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     if  (indice_campo == '\0')
         erro_sintaxe(2);
 
-    // Imprimindo modo de operação apropriado
-    // if (modo == "N")
-    //     std::cout << "Buscando registros '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
-    // else
-    //     std::cout << "Buscando primeiro registro '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
+    Imprimindo modo de operação apropriado
+    if (modo == "N")
+        std::cout << "Buscando registros '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
+    else
+        std::cout << "Buscando primeiro registro '" << vec.back() << "' em '" << vec.front() << "' na tabela '" << tabela << "'\n";
 
 
     if (indice_campo == 'H')
