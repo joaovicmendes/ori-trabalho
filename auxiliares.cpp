@@ -84,14 +84,22 @@ FILE *fopen_safe(const char *path, const char *modo)
     return arquivo;
 }
 
-std::vector<std::string> str_tokenize(const std::string& texto, const char delim)
+std::vector<std::string> str_tokenize(const std::string& texto, const char delim, int count)
 {
     std::vector<std::string> tokens;
     std::string tmp;
     std::stringstream ss(texto);
 
-    while (getline(ss, tmp, delim))
-        tokens.push_back(tmp);
+    if (count == -1)
+    {
+        while (getline(ss, tmp, delim))
+            tokens.push_back(tmp);
+    }
+    else
+    {
+        for (int i = 0; i < count && getline(ss, tmp, delim); i++)
+            tokens.push_back(tmp);
+    }
 
     return tokens;
 }

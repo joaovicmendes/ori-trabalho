@@ -45,7 +45,7 @@ FILE *fopen_safe(const char *path, const char *modo);
 // @param std::string : texto a ser tokenizado
 // @param const char* : delimitadores
 // @ret   std::vector<std::string>
-std::vector<std::string> str_tokenize(const std::string& texto, const char delim);
+std::vector<std::string> str_tokenize(const std::string& texto, const char delim, int count = -1);
 
 // Retorna o número de registros de tabela (conta o número de \n)
 // @param  str::string : tabela na qual os registros devem ser contados

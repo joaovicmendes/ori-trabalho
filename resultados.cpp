@@ -42,12 +42,19 @@ std::vector<long> busca_sequencial(const Metadado& mtd, const std::string& tabel
 
     while (!atingiu_max && !arquivo.eof()) 
     {
-        // Verificando se o campo foi deletado
-        if (linha.find(":") == std::string::npos)
+        if (linha.size() < 40)
         {
+            std::cout << "Registro não respeita tamanho mínimo: dados inválidos\n";
+            EB();
+        }
+
+        // Verificando se o campo foi deletado
+        if (linha.at(20) != ':')
+        {
+            // Desconsiderando fragmentação interna
             linha = linha.substr(0, linha.find("#"));
 
-            std::vector<std::string> vec = str_tokenize(linha, ';');
+            std::vector<std::string> vec = str_tokenize(linha, ';', indice + 1);
 
             if (vec.at(indice) == chave)
             {
