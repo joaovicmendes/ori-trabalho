@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
 #include "./headers/registros.h"
 #include "./headers/resultados.h"
@@ -45,10 +46,10 @@ std::vector<long> busca_sequencial(const Metadado& mtd, const std::string& tabel
         if (linha.find(":") == std::string::npos)
         {
             linha = linha.substr(0, linha.find("#"));
-            Registro reg(mtd, linha);
-            registro = reg.lista_campos();
 
-            if (registro.at(indice).valor == chave)
+            std::vector<std::string> vec = str_tokenize(linha, ';');
+
+            if (vec.at(indice) == chave)
             {
                 resultados.push_back(pos);
                 if (modo == "U")
