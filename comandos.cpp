@@ -136,17 +136,14 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     {
         std::string path;
         path.assign("./indices/" + tabela + "_" + vec.front() + ".dat");
+        // std::cout << "Busca em índice árvore realizada\n";
         Btree * btree = new Btree(path);
         Pair pair;
         pair.chave = stol(vec.back());
         int pesquisa = btree->ShowSearch(&pair);
 
-        if(pesquisa)
+        if (pesquisa)
             resultados.push_back(pair.cont);
-        else 
-            std::cout << "Nenhum resultado para essa pesquisa" << std::endl;        
-
-        
     }
     else
     {
