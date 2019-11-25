@@ -36,7 +36,7 @@ void preenche_indice_hash(const Metadado& mtd, const std::string& index_path, co
 // Funções internas
 
 // Retorna em qual dos baldes iniciais deve ser inserido/buscado
-long hash_func(long chave, long M);
+long hash_func(long chave, long m);
 
 // Insere p no bloco da posição index de arquivo
 void insere_bloco(FILE *arquivo, long index, Par p);

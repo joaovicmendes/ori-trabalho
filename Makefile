@@ -10,10 +10,7 @@ main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 	rm -f *.o ./metadados/sgdb ./metadados/*.dat ./tabelas/*.dat ./indices/*.dat ./indices_arvore/*.dat
 
-interpretador.o: ./headers/interpretador.h
-	$(CXX) $(CXXFLAGS) -c interpretador.cpp
-
 $(OBJECTS): ./headers/interpretador.h ./headers/comandos.h ./headers/auxiliares.h ./headers/metadados.h ./headers/registros.h ./headers/resultados.h ./headers/reaproveitamento.h ./headers/hash.h ./headers/disktree.h
 
 make clean:
-	rm ./metadados/sgdb ./metadados/*.dat ./tabelas/*.dat ./indices/*.dat
+	rm -f ./metadados/sgdb ./metadados/*.dat ./tabelas/*.dat ./indices/*.dat

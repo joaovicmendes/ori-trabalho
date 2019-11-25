@@ -135,7 +135,7 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     else if (indice_campo == 'A')
     {
         std::string path;
-        path.assign("./indices_arvore/" + tabela + "_" + vec.front() + ".dat");
+        path.assign("./indices/" + tabela + "_" + vec.front() + ".dat");
         Btree * btree = new Btree(path);
         Pair pair;
         pair.chave = stol(vec.back());
@@ -227,7 +227,7 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
     // Construindo índice árvore
     else if(modo == "A")
     {
-        index_path.assign("indices_arvore/" + tabela + "_" + chave + ".dat");
+        index_path.assign("indices/" + tabela + "_" + chave + ".dat");
 
         std::cout << "Criando índice árvore em '" << chave << "'\n";
         

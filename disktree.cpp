@@ -22,8 +22,6 @@
       file-name extensions, such as .bin and .txt.
 */
 
-using namespace std;
-
 #include <fstream>
 #include <iomanip>
 #include <stdlib.h>
@@ -40,6 +38,8 @@ using namespace std;
 #include "./headers/disktree.h"
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
+
+using namespace std;
 
 Btree::Btree(string TreeFileName)
 {  ifstream test(TreeFileName, ios::in); //| ios::nocreate);
@@ -104,7 +104,7 @@ void Btree::insert(dtype x)
    dtype xNew;
    status code = ins(root, x, xNew, pNew);
    if (code == DuplicateKey)
-      cout << "Duplicate key ignored.\n";
+      // cout << "Duplicate key ignored.\n";
    if (code == InsertNotComplete)
    {  long root0 = root;
       root = GetNode();
@@ -259,6 +259,8 @@ void Btree::DelNode(dtype x)
       root0 = root;
       root = RootNode.p[0]; FreeNode(root0);
       if (root != NIL) ReadNode(root, RootNode);
+      break;
+   default:
       break;
    }
 }
