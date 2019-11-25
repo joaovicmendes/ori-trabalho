@@ -21,54 +21,28 @@
       the optional textfile for input data. Use different
       file-name extensions, such as .bin and .txt.
 */
-#include <fstream.h>
-#include <iomanip.h>
+
+using namespace std;
+
+#include <fstream>
+#include <iomanip>
 #include <stdlib.h>
 #include <ctype.h>
+#include <iostream> 
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <functional>
 
-#define M 5  // Order of B-tree: M link fields in each node
+#include "./headers/comandos.h"
+#include "./headers/disktree.h"
+#include "./headers/metadados.h"
+#include "./headers/registros.h"
 
-enum status {InsertNotComplete, Success, DuplicateKey,
-     Underflow, NotFound};
-
-typedef int dtype;
-
-struct node {
-   int n;        // Number of items stored in a node (n < M)
-   dtype k[M-1]; // Data items (only the first n in use)
-   long p[M];    // 'Pointers' to other nodes (n+1 in use)
-};
-
-// Logical order:
-//    p[0], k[0], p[1], k[1], ..., p[n-1], k[n-1], p[n]
-
-class Btree {
-public:
-   Btree(const char *TreeFileName);
-   ~Btree();
-   void insert(dtype x);
-   void insert(const char *InpFileName);
-   void print(){cout << "Contents:\n"; pr(root, 0);}
-   void DelNode(dtype x);
-   void ShowSearch(dtype x);
-private:
-   enum {NIL=-1};
-   long root, FreeList;
-   node RootNode;
-   fstream file;
-   status ins(long r, dtype x, dtype &y, long &u);
-   void pr(long r, int nSpace);
-   int NodeSearch(dtype x, const dtype *a, int n)const;
-   status del(long r, dtype x);
-   void ReadNode(long r, node &Node);
-   void WriteNode(long r, const node &Node);
-   void ReadStart();
-   long GetNode();
-   void FreeNode(long r);
-};
-
-Btree::Btree(const char *TreeFileName)
-{  ifstream test(TreeFileName, ios::in | ios::nocreate);
+Btree::Btree(string TreeFileName)
+{  ifstream test(TreeFileName, ios::in); //| ios::nocreate);
       // Remove  "| ios::nocreate" if your compiler does not accept it.
    int NewFile = test.fail();
    test.clear(); test.close();
@@ -82,20 +56,21 @@ Btree::Btree(const char *TreeFileName)
       file.write((char*)start, 2 * sizeof(long));
    }  else
    {  long start[2];
-      file.open(TreeFileName, ios::out | ios::in |
-         ios::nocreate | ios::binary); // See above note.
+      file.open(TreeFileName, ios::out | ios::in |ios::binary); // | ios::nocreate // See above note.
       file.seekg(-1L, ios::end);
       char ch;
       file.read(&ch, 1); // Read signature.
       file.seekg(0L, ios::beg);
       file.read((char *)start, 2 * sizeof(long));
-      if (ch != sizeof(int))
-      {  cout << "Wrong file format.\n"; exit(1);
-      }
+      /*if (ch != sizeof(int))
+      {  
+         cout << (int)ch << endl;
+         cout << "Wrong file format.\n"; exit(1);
+      }*/
       root = start[0]; FreeList = start[1];
       RootNode.n = 0;   // Signal for function ReadNode
       ReadNode(root, RootNode);
-      print();
+      //print();
    }
 }
 
@@ -133,22 +108,25 @@ void Btree::insert(dtype x)
    if (code == InsertNotComplete)
    {  long root0 = root;
       root = GetNode();
-      RootNode.n = 1; RootNode.k[0] = xNew;
-      RootNode.p[0] = root0; RootNode.p[1] = pNew;
+      RootNode.n = 1;
+      RootNode.k[0] = xNew;
+      RootNode.p[0] = root0;
+      RootNode.p[1] = pNew;
       WriteNode(root, RootNode);
    }
 }
 
 void Btree::insert(const char *InpFileName)
-{  ifstream InpFile(InpFileName, ios::in | ios::nocreate);
+{  ifstream InpFile(InpFileName, ios::in); //| ios::nocreate);
    if (InpFile.fail())
    {  cout << "Cannot open input file " << InpFileName 
            << endl;
       return;
    }
    dtype x;
-   while(InpFile >> x) insert(x);
-   InpFile.clear(); InpFile.close();
+   while(InpFile >> x.chave >> x.cont) insert(x);
+   InpFile.clear();
+   InpFile.close();
 }
 
 status Btree::ins(long r, dtype x, dtype &y, long &q)
@@ -165,30 +143,43 @@ status Btree::ins(long r, dtype x, dtype &y, long &q)
    ReadNode(r, Node);
    n = Node.n;
    i = NodeSearch(x, Node.k, n);
-   if (i < n && x == Node.k[i]) return DuplicateKey;
+   if (i < n && x.chave == Node.k[i].chave) return DuplicateKey;
    code = ins(Node.p[i], x, xNew, pNew);
    if (code != InsertNotComplete) return code;
    // Insertion in subtree did not completely succeed;
    // try to insert xNew and pNew in the current node:
    if (n < M - 1)
-   {  i = NodeSearch(xNew, Node.k, n);
+   {  
+      i = NodeSearch(xNew, Node.k, n);
       for (j=n; j>i; j--)
-      {  Node.k[j] = Node.k[j-1]; Node.p[j+1] = Node.p[j];
+      {  
+         Node.k[j] = Node.k[j-1]; 
+         Node.p[j+1] = Node.p[j];
       }
-      Node.k[i] = xNew; Node.p[i+1] = pNew; ++Node.n;
-      WriteNode(r, Node); return Success;
+      Node.k[i] = xNew; 
+      Node.p[i+1] = pNew; 
+      ++Node.n;
+      WriteNode(r, Node); 
+      return Success;
    }
    // Current node is full (n == M - 1) and will be split.
    // Pass item k[h] in the middle of the augmented
    // sequence back via parameter y, so that it
    // can move upward in the tree. Also, pass a pointer
    // to the newly created node back via parameter q:
-   if (i == M - 1) {kFinal = xNew; pFinal = pNew;} else
-   {  kFinal = Node.k[M-2]; pFinal = Node.p[M-1];
-      for (j=M-2; j>i; j--)
-      {  Node.k[j] = Node.k[j-1]; Node.p[j+1] = Node.p[j];
+   if (i == M - 1) {
+      kFinal = xNew; pFinal = pNew;
+   } else
+   {  
+      kFinal = Node.k[M-2];
+      pFinal = Node.p[M-1];
+      for (j= M-2; j > i; j--)
+      {  
+         Node.k[j] = Node.k[j-1]; 
+         Node.p[j + 1] = Node.p[j];
       }
-      Node.k[i] = xNew; Node.p[i+1] = pNew;
+      Node.k[i] = xNew; 
+      Node.p[i+1] = pNew;
    }
    int h = (M - 1)/2;
    y = Node.k[h];           // y and q are passed on to the
@@ -200,12 +191,13 @@ status Btree::ins(long r, dtype x, dtype &y, long &q)
    // belong to the right of k[h] and are moved to *q:
    NewNode.n = M - 1 - h;
    for (j=0; j < NewNode.n; j++)
-   {  NewNode.p[j] = Node.p[j + h + 1];
-      NewNode.k[j] = 
-         (j < NewNode.n - 1 ? Node.k[j + h + 1] : kFinal);
+   {  
+      NewNode.p[j] = Node.p[j + h + 1];
+      NewNode.k[j] = (j < NewNode.n - 1 ? Node.k[j + h + 1] : kFinal);
    }
    NewNode.p[NewNode.n] = pFinal;
-   WriteNode(r, Node); WriteNode(q, NewNode);
+   WriteNode(r, Node);
+   WriteNode(q, NewNode);
    return InsertNotComplete;
 }
 
@@ -213,8 +205,9 @@ void Btree::pr(long r, int nSpace)
 {  if (r != NIL)
    {  int i;
       cout << setw(nSpace) << "";
-      node Node; ReadNode(r, Node);
-      for (i=0; i < Node.n; i++) cout << Node.k[i] << " ";
+      node Node; 
+      ReadNode(r, Node);
+      for (i=0; i < Node.n; i++) cout << Node.k[i].chave << " ";
       cout << endl;
       for (i=0; i <= Node.n; i++) pr(Node.p[i], nSpace+8);
    }
@@ -222,34 +215,37 @@ void Btree::pr(long r, int nSpace)
 
 int Btree::NodeSearch(dtype x, const dtype *a, int n)const
 {  int middle, left=0, right = n - 1;
-   if (x <= a[left]) return 0;
-   if (x > a[right]) return n;
+   if (x.chave <= a[left].chave) return 0;
+   if (x.chave > a[right].chave) return n;
    while (right - left > 1)
    {  middle = (right + left)/2;
-      (x <= a[middle] ? right : left) = middle;
+      (x.chave <= a[middle].chave ? right : left) = middle;
    }
    return right;
 }
 
-void Btree::ShowSearch(dtype x)
-{  cout << "Search path:\n";
+int Btree::ShowSearch(dtype *x)
+{
    int i, j, n;
    long r = root;
    node Node;
    while (r != NIL)
    {  ReadNode(r, Node);
       n = Node.n;
-      for (j=0; j<Node.n; j++) cout << " " << Node.k[j];
-      cout << endl;
-      i = NodeSearch(x, Node.k, n);
-      if (i < n && x == Node.k[i])
-      {  cout << "Key " << x << " found in position " << i
-            << " of last displayed node.\n";
-         return;
+      //for (j=0; j<Node.n; j++) cout << " " << Node.k[j].chave;
+      i = NodeSearch(*x, Node.k, n);
+      if (i < n && x->chave == Node.k[i].chave)
+      {  /*cout << "Key " << x.chave << " found in position " << i
+            << " of last displayed node.\n"; */
+         
+         x->cont = Node.k[i].cont;
+         return 1;
       }
       r = Node.p[i];
+      
    }
-   cout << "Key " << x << " not found.\n";
+   //cout << "Key " << x.chave << " not found.\n";
+   return 0;
 }
 
 void Btree::DelNode(dtype x)
@@ -257,7 +253,7 @@ void Btree::DelNode(dtype x)
    switch (del(root, x))
    {
    case NotFound:
-      cout << x << " not found.\n";
+      cout << x.chave << " not found.\n";
       break;
    case Underflow:
       root0 = root;
@@ -278,7 +274,7 @@ status Btree::del(long r, dtype x)
    long *p = Node.p, pL, pR;       // p[i] means Node.p[i]
    i = NodeSearch(x, k, n);
    if (p[0] == NIL)  // Are we dealing with a leaf?
-   {  if (i == n || x < k[i]) return NotFound;
+   {  if (i == n || x.chave < k[i].chave) return NotFound;
       // x == k[i]
       for (j=i+1; j < n; j++)
       {  k[j-1] = k[j]; p[j] = p[j+1];
@@ -289,7 +285,7 @@ status Btree::del(long r, dtype x)
          Success : Underflow;
    }
    // *r is an interior node, not a leaf:
-   if (i < n && x == k[i])
+   if (i < n && x.chave == k[i].chave)
    {  // x found in an interior node. Go to left child
       // and follow a path all the way to a leaf,
       // using rightmost branches:
@@ -412,11 +408,67 @@ long Btree::GetNode()  // Modified (see also the destructor ~Btree)
    return r;
 }
 
-
 void Btree::FreeNode(long r)
 {  node Node;
    ReadNode(r, Node);
    Node.p[0] = FreeList;
    FreeList = r;
    WriteNode(r, Node);
+}
+
+void Btree::preenche_indice_btree(const Metadado& mtd, const std::string& index_path, const std::string& chave, Btree *btree)
+{ 
+    long         qtd_blocos;
+    long              index;
+    FILE*     arquivo_btree;
+    std::fstream    arquivo;
+    std::string path_tabela("./tabelas/" + mtd.get_tabela() + ".dat");
+    std::string       linha;
+    std::vector<Reg> campos;
+    Pair                  p;
+
+    //Btree * btree = new Btree(index_path);
+    // Construindo btree
+    arquivo.open(path_tabela, std::fstream::in);
+    if (!arquivo.is_open())
+    {
+        std::cout << "Não pode abrir arquivo de tabela '" << path_tabela << "'\n";
+        EB();
+    }
+
+    // Obtendo número de blocos (iniciais) na hash em questão
+    p.cont = arquivo.tellg();
+    
+    getline(arquivo, linha);
+
+    while (!arquivo.eof()) 
+    {
+        // Verificando se o campo foi deletado
+        if (linha.find(":") == std::string::npos)
+        {
+            linha = linha.substr(0, linha.find("#"));
+            Registro reg(mtd, linha);
+            campos = reg.lista_campos();
+
+            for (int i = 0; i < campos.size(); i++)
+            {
+                if (campos.at(i).nome_campo == chave)
+                {
+                    p.chave = stol(campos.at(i).valor);
+                    //p.cont = arquivo.tellg(); 
+                    // Indice é qual bloco deve ser inserido, obtendo o número
+                    // do bloco - 1 e multiplicando por BLOCK_SIZE
+                    //index = (hash_func(p.chave, qtd_blocos) * BLOCK_SIZE) + sizeof(qtd_blocos);
+
+                    //insere_bloco(arquivo_hash, index, p);
+                }
+            }
+        }
+        btree->insert(p);
+        p.cont = arquivo.tellg();
+        getline(arquivo, linha); 
+    }
+
+    arquivo.close();
+    //delete btree;
 }

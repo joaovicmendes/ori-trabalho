@@ -9,11 +9,13 @@
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"
 #include "./headers/interpretador.h"
+#include "./headers/disktree.h"
 #include "./headers/hash.h"
 #include "./headers/metadados.h"
 #include "./headers/registros.h"
 #include "./headers/resultados.h"
 #include "./headers/reaproveitamento.h"
+
 
 std::map<std::string, std::vector<long> > lista_resultados;
 
@@ -125,14 +127,26 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
 
     if (indice_campo == 'H')
     {
-        std::string path("./indices/" + tabela + "_" + vec.front() + ".dat");
+        std::string path;
+        path.assign("./indices/" + tabela + "_" + vec.front() + ".dat");
         // std::cout << "Busca em índice hash realizada\n";
         resultados = busca_hash(modo, path, stol(vec.back()) );
     }
     else if (indice_campo == 'A')
     {
-        // std::cout << "Busca em índice árvore realizada (não implementada)\n";
-        resultados = busca_sequencial(mtd, tabela, modo, vec.front(), vec.back());
+        std::string path;
+        path.assign("./indices_arvore/" + tabela + "_" + vec.front() + ".dat");
+        Btree * btree = new Btree(path);
+        Pair pair;
+        pair.chave = stol(vec.back());
+        int pesquisa = btree->ShowSearch(&pair);
+
+        if(pesquisa)
+            resultados.push_back(pair.cont);
+        else 
+            std::cout << "Nenhum resultado para essa pesquisa" << std::endl;        
+
+        
     }
     else
     {
@@ -165,7 +179,7 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
     }
 
     Metadado mtd(tabela);
-    index_path.assign("./indices/" + tabela + "_" + chave + ".dat");
+    
 
     // Verificando se campo existe
     if (!mtd.tem(chave))
@@ -189,17 +203,19 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
     }
 
     // Criando arquivo de índice
-    arquivo.open(index_path, std::fstream::out);
-    if (!arquivo.is_open())
-    {
-        std::cout << "Não conseguiu criar arquivo de índice\n";
-        EB();
-    }
-    arquivo.close();
+    
 
     // Construindo índice hash
     if (modo == "H")
-    {
+    {   
+        index_path.assign("indices/" + tabela + "_" + chave + ".dat");
+        arquivo.open(index_path, std::fstream::out);
+        if (!arquivo.is_open())
+        {
+            std::cout << "Não conseguiu criar arquivo de índice\n";
+            EB();
+        }
+        arquivo.close();
         std::cout << "Criando índice hash em '" << chave << "'\n";
         inicializa_hash(index_path, reg_count(tabela));
 
@@ -209,9 +225,20 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
         mtd.save();        
     }
     // Construindo índice árvore
-    else
+    else if(modo == "A")
     {
-        std::cout << "Criando índice árvore em '" << chave << "' (não implementado)\n";
+        index_path.assign("indices_arvore/" + tabela + "_" + chave + ".dat");
+
+        std::cout << "Criando índice árvore em '" << chave << "'\n";
+        
+
+        // Criando Btree
+        Btree * btree = new Btree(index_path);
+        
+        btree->preenche_indice_btree(mtd, index_path, chave, btree);
+
+        delete btree;
+        
 
         mtd.set_indice(chave, 'A');
         mtd.save();
@@ -263,8 +290,6 @@ void IR(const std::string& tabela, const std::string& registro)
 
 void RI(const std::string& tabela, const std::string& chave) 
 {
-    std::string index_path("./indices/" + tabela + "_" + chave + ".dat");
-    std::fstream arquivo;
 
     if (!tem_tabela(tabela))
     {
@@ -295,13 +320,19 @@ void RI(const std::string& tabela, const std::string& chave)
         return;
     }
 
-    remove(index_path.c_str());
+    std::string index_path("./indices/" + tabela + "_" + chave + ".dat");
+    std::string index_path_arvore("./indices_arvore/" + tabela + "_" + chave + ".dat");
+
 
     std::cout << "Índice em ";
-    if (mtd.indice_em(chave) == 'H')
+    if (mtd.indice_em(chave) == 'H'){
         std::cout << "hash";
-    else
+        remove(index_path.c_str());
+    }
+    else{
         std::cout << "árvore";
+        remove(index_path_arvore.c_str());
+    }
     std::cout << " de '" << chave << "' removido com sucesso\n";
 
     mtd.set_indice(chave, 'N');
