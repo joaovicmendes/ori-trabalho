@@ -228,10 +228,8 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
     else if(modo == "A")
     {
         index_path.assign("indices_arvore/" + tabela + "_" + chave + ".dat");
-
         std::cout << "Criando índice árvore em '" << chave << "'\n";
         
-
         // Criando Btree
         Btree * btree = new Btree(index_path);
         
@@ -372,19 +370,23 @@ void GI(const std::string& tabela, const std::string& chave)
         return;
     }
 
-    index_path.assign("./indices/" + tabela + "_" + chave + ".dat");
-
+    
+    /*
     arquivo.open(index_path, std::fstream::out | std::fstream::trunc);
     arquivo.close();
-
+    */
     if (mtd.hash_em(chave))
     {
+        index_path.assign("./indices/" + tabela + "_" + chave + ".dat");
         inicializa_hash(index_path, reg_count(tabela));
         preenche_indice_hash(mtd, index_path, chave);
     }
     else if (mtd.arvore_em(chave))
     {
-
+        index_path.assign("./indices_arvore/" + tabela + "_" + chave + ".dat");
+        Btree * btree = new Btree(index_path);
+        btree->preenche_indice_btree(mtd, index_path, chave, btree);
+        delete btree;
     }
 
     std::cout << "Índice de '" << chave << "' recriado com sucesso\n";

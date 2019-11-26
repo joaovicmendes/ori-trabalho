@@ -103,8 +103,8 @@ void Btree::insert(dtype x)
 {  long pNew;
    dtype xNew;
    status code = ins(root, x, xNew, pNew);
-   if (code == DuplicateKey)
-      cout << "Duplicate key ignored.\n";
+   //if (code == DuplicateKey)
+       //cout << "Duplicate key ignored.\n";
    if (code == InsertNotComplete)
    {  long root0 = root;
       root = GetNode();
@@ -232,19 +232,14 @@ int Btree::ShowSearch(dtype *x)
    while (r != NIL)
    {  ReadNode(r, Node);
       n = Node.n;
-      //for (j=0; j<Node.n; j++) cout << " " << Node.k[j].chave;
       i = NodeSearch(*x, Node.k, n);
       if (i < n && x->chave == Node.k[i].chave)
-      {  /*cout << "Key " << x.chave << " found in position " << i
-            << " of last displayed node.\n"; */
-         
+      {  
          x->cont = Node.k[i].cont;
          return 1;
       }
-      r = Node.p[i];
-      
+      r = Node.p[i];   
    }
-   //cout << "Key " << x.chave << " not found.\n";
    return 0;
 }
 
@@ -427,7 +422,6 @@ void Btree::preenche_indice_btree(const Metadado& mtd, const std::string& index_
     std::vector<Reg> campos;
     Pair                  p;
 
-    //Btree * btree = new Btree(index_path);
     // Construindo btree
     arquivo.open(path_tabela, std::fstream::in);
     if (!arquivo.is_open())
@@ -436,7 +430,6 @@ void Btree::preenche_indice_btree(const Metadado& mtd, const std::string& index_
         EB();
     }
 
-    // Obtendo número de blocos (iniciais) na hash em questão
     p.cont = arquivo.tellg();
     
     getline(arquivo, linha);
@@ -453,22 +446,12 @@ void Btree::preenche_indice_btree(const Metadado& mtd, const std::string& index_
             for (int i = 0; i < campos.size(); i++)
             {
                 if (campos.at(i).nome_campo == chave)
-                {
-                    p.chave = stol(campos.at(i).valor);
-                    //p.cont = arquivo.tellg(); 
-                    // Indice é qual bloco deve ser inserido, obtendo o número
-                    // do bloco - 1 e multiplicando por BLOCK_SIZE
-                    //index = (hash_func(p.chave, qtd_blocos) * BLOCK_SIZE) + sizeof(qtd_blocos);
-
-                    //insere_bloco(arquivo_hash, index, p);
-                }
+                  p.chave = stol(campos.at(i).valor);
             }
         }
         btree->insert(p);
         p.cont = arquivo.tellg();
         getline(arquivo, linha); 
     }
-
     arquivo.close();
-    //delete btree;
 }

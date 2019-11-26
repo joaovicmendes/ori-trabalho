@@ -110,7 +110,7 @@ std::vector<long> busca_hash(const std::string& modo, const std::string& hash_pa
         {
             if (blk.arr[i].chave == chave)
             {
-                resultados.push_back(blk.arr[i].cont);
+                    resultados.push_back(blk.arr[i].cont);
                 if (modo == "U")
                     atingiu_max = true;
             }

@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <string.h>
 
 #include "./headers/auxiliares.h"
 #include "./headers/comandos.h"

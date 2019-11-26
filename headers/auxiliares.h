@@ -1,6 +1,7 @@
 #ifndef AUXILIARES_H
 #define AUXILIARES_H
 
+#include <vector>
 // Recebe um std::string e retorna true se existe espaços (" ") e false se não.
 // @param std::string
 // @ret   bool
