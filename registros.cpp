@@ -268,7 +268,10 @@ void Registro::print()
                     aux += this->campos.at(i).valor.at(j);
             }
 
-            std::cout << "\n\"" << aux << "\"";
+            // std::cout << "\n\"" << aux << "\"";
+            std::cout << "Campo escrito no arquivo 'saida_binario'";
+            std::fstream a("./saida_binario", std::fstream::out);
+            a << aux;
         }
         std::cout << "\n";
 

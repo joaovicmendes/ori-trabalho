@@ -135,18 +135,15 @@ void BR(const std::string& modo, const std::string& tabela, const std::string& b
     else if (indice_campo == 'A')
     {
         std::string path;
-        path.assign("./indices_arvore/" + tabela + "_" + vec.front() + ".dat");
+        path.assign("./indices/" + tabela + "_" + vec.front() + ".dat");
+        // std::cout << "Busca em índice árvore realizada\n";
         Btree * btree = new Btree(path);
         Pair pair;
         pair.chave = stol(vec.back());
         int pesquisa = btree->ShowSearch(&pair);
 
-        if(pesquisa)
+        if (pesquisa)
             resultados.push_back(pair.cont);
-        else 
-            std::cout << "Nenhum resultado para essa pesquisa" << std::endl;        
-
-        
     }
     else
     {
@@ -227,7 +224,8 @@ void CI(const std::string& modo, const std::string& tabela, const std::string& c
     // Construindo índice árvore
     else if(modo == "A")
     {
-        index_path.assign("indices_arvore/" + tabela + "_" + chave + ".dat");
+        index_path.assign("indices/" + tabela + "_" + chave + ".dat");
+
         std::cout << "Criando índice árvore em '" << chave << "'\n";
         
         // Criando Btree

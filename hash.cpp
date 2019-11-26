@@ -122,10 +122,10 @@ std::vector<long> busca_hash(const std::string& modo, const std::string& hash_pa
     return resultados;
 }
 
-long hash_func(long chave, long M)
+long hash_func(long chave, long m)
 {
     long a = 9491, b = 11923;
-    return ((a * chave) + b) % M;
+    return ((a * chave) + b) % m;
 }
 
 void insere_bloco(FILE *arquivo, long index, Par p)
