@@ -22,6 +22,9 @@ Arquivos
 - [`resultados.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/resultados.cpp) arquivo com funções referentes à busca sequêncial.
 - [`roteiro.txt`](https://github.com/joaovicmendes/ori-trabalho/blob/master/roteiro.cpp) caso de teste curto, para testar durante o desenvolvimento das funções.
 
+# Grupo
+- [Joõa Victor Mendes Freire](https://github.com/joaovicmendes)
+- [Yuri Gabriel Aragão da Silva](https://github.com/Tyred)
 
 # Ciclo 1 – Interpretador de comandos e estruturação dos metadados para a base
   Existem dois tipos de metadados: do sistema e de cada tabela.
