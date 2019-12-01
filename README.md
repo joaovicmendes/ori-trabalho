@@ -23,7 +23,7 @@ Arquivos
 - [`roteiro.txt`](https://github.com/joaovicmendes/ori-trabalho/blob/master/roteiro.cpp) caso de teste curto, para testar durante o desenvolvimento das funções.
 
 # Grupo
-- [Joõa Victor Mendes Freire](https://github.com/joaovicmendes)
+- [João Victor Mendes Freire](https://github.com/joaovicmendes)
 - [Yuri Gabriel Aragão da Silva](https://github.com/Tyred)
 
 # Ciclo 1 – Interpretador de comandos e estruturação dos metadados para a base
