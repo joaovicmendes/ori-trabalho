@@ -10,7 +10,7 @@ Diretórios
 - [`testes/`](https://github.com/joaovicmendes/ori-trabalho/tree/master/testes) gerador de casos de teste (e casos).
 
 Arquivos
-- [`DISKTREE.CPP`](https://github.com/joaovicmendes/ori-trabalho/blob/master/DISKTREE.CPP) arquivo com funções referentes ao índice em  Àrvore B.
+- [`disktree.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/disktree.cpp) arquivo com funções referentes ao índice em  Àrvore B.
 - [`auxiliares.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/auxiliares.cpp) arquivo com funções auxiliares do projeto.
 - [`comandos.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/comandos.cpp) arquivo com funções referentes aos comandos suportados do mini SGDB.
 - [`hash.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/hash.cpp) arquivo com funções referentes ao índice em Hash.
@@ -23,7 +23,11 @@ Arquivos
 - [`roteiro.txt`](https://github.com/joaovicmendes/ori-trabalho/blob/master/roteiro.cpp) caso de teste curto, para testar durante o desenvolvimento das funções.
 
 # Grupo
+– Gabrielle Faria
+- Henrique Frajacomo
 - [João Victor Mendes Freire](https://github.com/joaovicmendes)
+- Juan Santos
+- Murilo Carmo
 - [Yuri Gabriel Aragão da Silva](https://github.com/Tyred)
 
 # Ciclo 1 – Interpretador de comandos e estruturação dos metadados para a base
@@ -55,7 +59,7 @@ Arquivos
 
 
 # Ciclo 5 – Indexação com árvores de multiplos caminhos
-  Ainda não implementado!
+  Utilizada implementação de um livro com alterações (implementação e créditos `em disktree.cpp`).
 
 
 # Ciclo 6 – Indexação com hash
