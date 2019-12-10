@@ -23,7 +23,7 @@ Arquivos
 - [`roteiro.txt`](https://github.com/joaovicmendes/ori-trabalho/blob/master/roteiro.cpp) caso de teste curto, para testar durante o desenvolvimento das funções.
 
 # Grupo
-– Gabrielle Faria
+- Gabrielle Faria
 - Henrique Frajacomo
 - [João Victor Mendes Freire](https://github.com/joaovicmendes)
 - Juan Santos
