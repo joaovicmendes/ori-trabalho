@@ -10,7 +10,7 @@ Diretórios
 - [`testes/`](https://github.com/joaovicmendes/ori-trabalho/tree/master/testes) gerador de casos de teste (e casos).
 
 Arquivos
-- [`disktree.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/disktree.cpp) arquivo com funções referentes ao índice em  Àrvore B.
+- [`disktree.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/disktree.cpp) arquivo com funções referentes ao índice em  Árvore B.
 - [`auxiliares.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/auxiliares.cpp) arquivo com funções auxiliares do projeto.
 - [`comandos.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/comandos.cpp) arquivo com funções referentes aos comandos suportados do mini SGDB.
 - [`hash.cpp`](https://github.com/joaovicmendes/ori-trabalho/blob/master/hash.cpp) arquivo com funções referentes ao índice em Hash.
